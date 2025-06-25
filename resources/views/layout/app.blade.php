@@ -11,11 +11,11 @@
    
         <nav class="bg-blue-600 p-4 text-white shadow-md flex items-center justify-between">
     <div class="flex items-center space-x-3">
-        <img src="{{ asset('images/img6.jpg') }}" alt="Logo Senelec" class="h-10 w-auto">
+        <img src="{{ asset('images/img7.png') }}" alt="Logo KARDEX" class="h-10 w-auto">
         <span class="text-xl font-bold">Application de Gestion de Stock</span>
     </div>
 
-    <form method="POST" action="{{ route('logout') }}">
+    <form method="POST" action="{{ url('/logout') }}">
         @csrf
         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg transition">
             Déconnexion

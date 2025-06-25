@@ -1,30 +1,57 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Article extends Model
 {
-    protected $fillable = ['codeArticle', 'uniteDeMesure', 'quantiteStock', 'seuilAlerte', 'quantiteInitiale'];
+    use HasFactory;
 
-    public function mouvements()
+    protected $fillable = [
+        'codeArticle',
+        'description',
+        'uniteDeMesure',
+        'quantiteStock',
+        'seuilAlerte',
+        'quantiteInitiale',
+        'idOrganisation',
+        'prixUnitaire',
+    ];
+
+    protected $casts = [
+        'quantite_initiale' => 'float',
+        'quantite_stock' => 'float',
+        'seuil_alerte' => 'float',
+        'prix_unitaire' => 'float',
+    ];
+
+    /**
+     * Get the organisation that owns the article.
+     */
+    public function organisation()
     {
-        return $this->hasMany(Mouvement::class, 'idArticle');
+        return $this->belongsTo(Organisation::class);
+    }
+
+    /**
+     * Get the mouvements for this article.
+     */
+    public function mouvements(): HasMany
+    {
+        return $this->hasMany(Mouvement::class);
     }
 
     public function destinations()
     {
         return $this->hasMany(Destination::class, 'idArticle');
     }
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(Stock::class);
+    }
 }
-Schema::create('articles', function (Blueprint $table) {
-    $table->id('idArticle');
-    $table->string('codeArticle');
-    $table->string('uniteDeMesure')->nullable();
-    $table->integer('quantiteStock')->default(0);
-    $table->integer('seuilAlerte')->default(0);
-    $table->string('quantiteInitiale')->nullable();
-    $table->timestamps();
-});
 
 

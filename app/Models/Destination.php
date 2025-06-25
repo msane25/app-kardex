@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Destination extends Model
 {
+    protected $primaryKey = 'idDestination';
+    
     protected $fillable = ['libelle', 'region', 'idArticle'];
 
     public function article()
@@ -12,11 +14,3 @@ class Destination extends Model
         return $this->belongsTo(Article::class, 'idArticle');
     }
 }
-Schema::create('destinations', function (Blueprint $table) {
-    $table->id('idDestination');
-    $table->string('libelle');
-    $table->string('region');
-    $table->unsignedBigInteger('idArticle');
-    $table->foreign('idArticle')->references('idArticle')->on('articles');
-    $table->timestamps();
-});

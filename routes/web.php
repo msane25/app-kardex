@@ -1,88 +1,64 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentationController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\MagasinierController;
+use App\Http\Controllers\admin\AuthController;
+use App\Http\Controllers\StockController;
 
-// ✅ Page d’accueil publique (welcome.blade.php)
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+// Page d'accueil avec la vidéo
 Route::get('/', function () {
     return view('welcome');
 });
 
-// ✅ Page de login admin
-Route::get('/utilisateur', function () {
-    return view('utilisateur');
-})->name('utilisateur.form');
+// Routes pour l'authentification utilisateur
+Route::get('/utilisateur', [AuthController::class, 'showLoginForm'])->name('utilisateur.form');
+Route::post('/utilisateur', [AuthController::class, 'login'])->name('utilisateur.login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/utilisateur/login', [AuthController::class, 'login'])->name('admin.login');
-
-// ✅ Page du magasinier
-Route::get('/magasinier', function () {
-    return view('magasinier');
-})->name('magasinier');
-
-// ✅ Page du Responsable (protégée si besoin plus tard)
-Route::get('/responsable', function () {
-    return view('responsable');
-})->name('responsable');
-
-// ✅ Page du CHEF DE SERVICE (protégée si besoin plus tard)
-Route::get('/chefservice', function () {
-    return view('chefservice');
-})->name('chefservice');
-
-// ✅ Route de déconnexion propre
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
-
-// ✅ Route de soumission du formulaire stock (protégée par auth)
-Route::middleware('auth')->group(function () {
-    Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
-});
-
-// ✅ Routes Breeze / Laravel Auth (si Breeze est installé)
-require __DIR__.'/auth.php';
-
-
-// RETOUR VERS LA PAGE WELCOME BLADE ACCEUIL
-Route::post('/logout', function () {
-    Auth::logout();
-    return redirect('/');
-})->name('logout');
-
-
-// ✅ Page du Responsable (protégée si besoin plus tard)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
-
-
-// ✅ Page DASHBOARD (protégée si besoin plus tard)
-use App\Http\Controllers\DashboardController;
-
-Route::get('/dashboard', [DashboardController::class, 'index'])
-->name('dashboard');
-
-Route::get('/login', [CustomAuthController::class, 'showLoginForm'])->name('login.form');
-Route::post('/login', [CustomAuthController::class, 'login'])->name('login.process');
-
+// Routes protégées par l'authentification
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
-    Route::get('/magasinier/dashboard', fn() => view('magasinier.dashboard'))->name('magasinier.dashboard');
-    Route::get('/responsable/dashboard', fn() => view('responsable.dashboard'))->name('responsable.dashboard');
+    // Route du magasinier
+    Route::get('/magasinier', [MagasinierController::class, 'index'])->name('magasinier.index');
+
+    // Routes pour les articles
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+
+    // Routes pour le stock
+    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+
+    // Routes pour la documentation
+    Route::get('/documentation/manuel-utilisateur', [DocumentationController::class, 'manuelUtilisateur'])->name('documentation.manuel');
+
+    // Routes pour l'importation
+    Route::get('/admin/import', [ImportController::class, 'showImportForm'])->name('admin.import.form');
+    Route::post('/admin/import', [ImportController::class, 'import'])->name('admin.import');
+
+    // Routes pour le profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('/stock/request', [StockController::class, 'storeRequest'])->name('stock.request.store');
+
+Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 
 
-
-
+require __DIR__.'/auth.php';
+require __DIR__.'/dashboard.php';
