@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
+    protected $primaryKey = 'idRole';
     protected $fillable = ['libelle'];
 
     public function utilisateurs()
@@ -12,9 +13,3 @@ class Role extends Model
         return $this->hasMany(Utilisateur::class, 'idRole');
     }
 }
-
-Schema::create('roles', function (Blueprint $table) {
-    $table->id('idRole');
-    $table->string('libelle');
-    $table->timestamps();
-});

@@ -5,18 +5,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Connexion extends Model
 {
+    protected $primaryKey = 'idConnexion';
+    
     protected $fillable = ['password', 'matricule'];
 
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'matricule');
+        return $this->belongsTo(Utilisateur::class, 'matricule', 'Matricule');
     }
 }
-
-Schema::create('connexions', function (Blueprint $table) {
-    $table->id('idConnexion');
-    $table->string('password');
-    $table->string('matricule');
-    $table->foreign('matricule')->references('matricule')->on('utilisateurs');
-    $table->timestamps();
-});

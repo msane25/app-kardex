@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminController extends Controller
+class AuthController extends Controller
 {
     public function showLoginForm()
     {
@@ -14,17 +15,26 @@ class AdminController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = [
-            'email' => $request->input('texte'),
-            'password' => $request->input('password')
-        ];
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
         if (Auth::attempt($credentials)) {
-            return redirect()->route('magasinier.form'); // redirection après succès
+            $request->session()->regenerate();
+            return redirect('/magasinier');
         }
 
-        return redirect()->back()->with('error', 'Identifiants invalides.');
+        return back()->withErrors([
+            'email' => 'Les identifiants fournis ne correspondent pas à nos enregistrements.',
+        ])->withInput($request->only('email'));
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/utilisateur');
     }
 }
-
-

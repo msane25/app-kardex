@@ -1,15 +1,34 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Utilisateur extends Model
+class Utilisateur extends Authenticatable
 {
-    protected $primaryKey = 'matricule';
+    use Notifiable;
+
+    protected $primaryKey = 'Matricule';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['matricule', 'nom', 'prenom', 'idRole'];
+    protected $fillable = ['Matricule', 'prénom', 'nom', 'Email', 'idRole'];
+
+    // Configuration pour l'authentification
+    public function getAuthPassword()
+    {
+        return $this->connexion->password ?? null;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'Email';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->Email;
+    }
 
     public function role()
     {
@@ -18,20 +37,11 @@ class Utilisateur extends Model
 
     public function mouvements()
     {
-        return $this->hasMany(Mouvement::class, 'matricule');
+        return $this->hasMany(Mouvement::class, 'matricule', 'Matricule');
     }
 
     public function connexion()
     {
-        return $this->hasOne(Connexion::class, 'matricule');
+        return $this->hasOne(Connexion::class, 'matricule', 'Matricule');
     }
 }
-
-Schema::create('utilisateurs', function (Blueprint $table) {
-    $table->string('matricule')->primary();
-    $table->string('nom');
-    $table->string('prenom');
-    $table->unsignedBigInteger('idRole')->nullable();
-    $table->foreign('idRole')->references('idRole')->on('roles');
-    $table->timestamps();
-});

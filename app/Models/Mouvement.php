@@ -1,55 +1,49 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Mouvement extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'quantite', 'date_mouvement', 'matricule',
-        'idOperation', 'idArticle', 'idDestination', 'idTypeMouvement'
+        'date_mouvement',
+        'type_mouvement_id', // <-- clé étrangère
+        'quantite',
+        'article_id',
+        'operation_id',
+        'destination',
+        'fournisseur',
+        'document_number'
     ];
 
-    public function utilisateur()
+    protected $casts = [
+        'date_mouvement' => 'date',
+        'quantite' => 'integer'
+    ];
+
+    /**
+     * Get the article that owns the mouvement.
+     */
+    public function article(): BelongsTo
     {
-        return $this->belongsTo(Utilisateur::class, 'matricule');
+        return $this->belongsTo(Article::class);
     }
 
-    public function operation()
+    /**
+     * Get the operation that owns the mouvement.
+     */
+    public function operation(): BelongsTo
     {
-        return $this->belongsTo(Operation::class, 'idOperation');
-    }
-
-    public function article()
-    {
-        return $this->belongsTo(Article::class, 'idArticle');
-    }
-
-    public function destination()
-    {
-        return $this->belongsTo(Destination::class, 'idDestination');
+        return $this->belongsTo(Operation::class);
     }
 
     public function typeMouvement()
     {
-        return $this->belongsTo(TypeMouvement::class, 'idTypeMouvement');
+        return $this->belongsTo(TypeMouvement::class, 'type_mouvement_id');
     }
 }
-Schema::create('mouvements', function (Blueprint $table) {
-    $table->id('idMouvement');
-    $table->string('quantite');
-    $table->date('date_mouvement');
-    $table->string('matricule');
-    $table->unsignedBigInteger('idOperation');
-    $table->unsignedBigInteger('idArticle');
-    $table->unsignedBigInteger('idDestination');
-    $table->unsignedBigInteger('idTypeMouvement');
-
-    $table->foreign('matricule')->references('matricule')->on('utilisateurs');
-    $table->foreign('idOperation')->references('idOperation')->on('operations');
-    $table->foreign('idArticle')->references('idArticle')->on('articles');
-    $table->foreign('idDestination')->references('idDestination')->on('destinations');
-    $table->foreign('idTypeMouvement')->references('idTypeMouvement')->on('type_mouvements');
-    $table->timestamps();
-});
 

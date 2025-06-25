@@ -1,21 +1,31 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Operation extends Model
 {
-    protected $fillable = ['type_operation', 'libelle'];
+    use HasFactory;
 
-    public function mouvements()
+    protected $fillable = [
+        'type_operation',
+        'destination_operation',
+        'date_operation',
+        'description'
+    ];
+
+    protected $casts = [
+        'date_operation' => 'date'
+    ];
+
+    /**
+     * Get the mouvements for this operation.
+     */
+    public function mouvements(): HasMany
     {
-        return $this->hasMany(Mouvement::class, 'idOperation');
+        return $this->hasMany(Mouvement::class);
     }
 }
-Schema::create('operations', function (Blueprint $table) {
-    $table->id('idOperation');
-    $table->string('type_operation');
-    $table->string('libelle');
-    $table->timestamps();
-});
 
