@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Operation;
+use App\Models\TypeMouvement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,20 +20,19 @@ class OperationController extends Controller
             return response()->json(['success' => false, 'message' => 'Non authentifié'], 401);
         }
 
-        // Adapter les noms de champs attendus depuis le frontend
         $data = $request->all();
-        $typeOperation = $data['typeOperation'] ?? $data['type_operation'] ?? null;
+        // Gestion du type de mouvement : id ou nom
+        $typeMouvementId = $data['type_mouvement_id'] ?? null;
+        $typeMouvementNom = $data['type_mouvement'] ?? $data['mouvement'] ?? null;
         $destinationOperation = $data['destinationOperation'] ?? $data['destination_operation'] ?? null;
         $libelleOperation = $data['libelleOperation'] ?? $data['libelle_operation'] ?? null;
 
-        // Validation
+        // Validation de base
         $validator = Validator::make([
-            'type_operation' => $typeOperation,
             'destination_operation' => $destinationOperation,
             'description' => $libelleOperation,
-            'date_operation' => now()->toDateString(), // Ajout automatique de la date
+            'date_operation' => now()->toDateString(),
         ], [
-            'type_operation' => 'required|string|max:255',
             'destination_operation' => 'required|string|max:255',
             'description' => 'nullable|string',
             'date_operation' => 'required|date',
@@ -43,6 +43,34 @@ class OperationController extends Controller
                 'success' => false,
                 'message' => 'Erreur de validation',
                 'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Gestion du type de mouvement
+        $typeOperation = null;
+        $typeMouvementModel = null;
+        if ($typeMouvementId) {
+            $typeMouvementModel = TypeMouvement::find($typeMouvementId);
+            if (!$typeMouvementModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Type de mouvement introuvable',
+                    'errors' => ['type_mouvement_id' => ['Type de mouvement non trouvé']]
+                ], 422);
+            }
+            $typeOperation = $typeMouvementModel->mouvement;
+        } elseif ($typeMouvementNom) {
+            $typeMouvementModel = TypeMouvement::where('mouvement', $typeMouvementNom)->first();
+            if (!$typeMouvementModel) {
+                // Création du type de mouvement s'il n'existe pas
+                $typeMouvementModel = TypeMouvement::create(['mouvement' => $typeMouvementNom]);
+            }
+            $typeOperation = $typeMouvementModel->mouvement;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Type de mouvement requis',
+                'errors' => ['type_mouvement' => ['Le type de mouvement est requis']]
             ], 422);
         }
 
@@ -57,7 +85,9 @@ class OperationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Opération créée avec succès',
-            'data' => $operation
+            'data' => $operation,
+            'type_mouvement_id' => $typeMouvementModel->id_type_mouvement,
+            'type_mouvement' => $typeMouvementModel->mouvement
         ], 201);
     }
 

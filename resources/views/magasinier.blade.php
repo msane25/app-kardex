@@ -219,7 +219,7 @@
                         Annuler
                     </button>
                     <button type="button" onclick="saveArticle()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Créer l'article
+                        Enregistrer
                     </button>
                     <button type="button" onclick="editArticle()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                         Modifier
@@ -316,7 +316,7 @@
                         Annuler
                     </button>
                     <button type="button" onclick="saveMouvement()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        Créer le mouvement
+                        Enregistrer
                     </button>
                     <button type="button" onclick="editMouvement()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                         Modifier
@@ -358,7 +358,7 @@
                         Annuler
                     </button>
                     <button type="button" onclick="saveOperation()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                        Créer l'opération
+                        Enregistrer
                     </button>
                     <button type="button" onclick="editOperation()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                         Modifier
@@ -378,15 +378,10 @@
                 </div>
             </div>
             <div class="modal-body">
-                <form class="space-y-4">
+                <form class="space-y-4" onsubmit="event.preventDefault(); saveTypeMouvement();">
                     <div>
                         <label for="modal_type_mouvement_value" class="block text-sm font-medium text-gray-700">Type de Mouvement *</label>
-                        <select id="modal_type_mouvement_value" name="modal_type_mouvement_value" required class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
-                            <option value="">-- Sélectionner --</option>
-                            <option value="Entrée">Entrée</option>
-                            <option value="Sortie">Sortie</option>
-                            <option value="Retour">Retour</option>
-                        </select>
+                        <input type="text" id="modal_type_mouvement_value" name="modal_type_mouvement_value" required class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Ex: Entrée, Sortie, Retour...">
                     </div>
                 </form>
             </div>
@@ -396,7 +391,7 @@
                         Annuler
                     </button>
                     <button type="button" onclick="saveTypeMouvement()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                        Créer le type de mouvement
+                        Enregistrer
                     </button>
                 </div>
             </div>
@@ -422,29 +417,29 @@
             <!-- Boutons d'action -->
             <div class="flex flex-row justify-center mb-10">
                 <div class="flex flex-col gap-6 items-center w-full max-w-lg mx-auto">
-                    <button onclick="openOperationModal()" class="w-full inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl shadow-md hover:bg-red-700 transition-all duration-200 text-lg font-semibold justify-center">
+                    <button onclick="openTypeMouvementModal()" class="w-full inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl shadow-md hover:bg-green-700 transition-all duration-200 text-lg font-semibold">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span class="w-full text-center">Nouveau Type Mouvement</span>
+                    </button>
+                    <button onclick="openOperationModal()" class="w-full inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl shadow-md hover:bg-red-700 transition-all duration-200 text-lg font-semibold">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         <span class="w-full text-center">Nouvelle Opération</span>
                     </button>
-                    <button onclick="openArticleModal()" class="w-full inline-flex items-center px-6 py-3 bg-yellow-500 text-white rounded-xl shadow-md hover:bg-yellow-600 transition-all duration-200 text-lg font-semibold justify-center">
+                    <button onclick="openArticleModal()" class="w-full inline-flex items-center px-6 py-3 bg-yellow-500 text-white rounded-xl shadow-md hover:bg-yellow-600 transition-all duration-200 text-lg font-semibold">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         <span class="w-full text-center">Nouvel Article</span>
                     </button>
-                    <button onclick="openMouvementModal()" class="w-full inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 transition-all duration-200 text-lg font-semibold justify-center">
+                    <button onclick="openMouvementModal()" class="w-full inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 transition-all duration-200 text-lg font-semibold">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         <span class="w-full text-center">Nouveau Mouvement</span>
-                    </button>
-                    <button onclick="openTypeMouvementModal()" class="w-full inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl shadow-md hover:bg-green-700 transition-all duration-200 text-lg font-semibold justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        <span class="w-full text-center">Nouveau Type Mouvement</span>
                     </button>
                 </div>
             </div>
@@ -853,7 +848,7 @@
 
     function loadArticles() {
         // Cette fonction devrait faire un appel AJAX pour récupérer la liste des articles
-        fetch('/api/articles')
+        fetch(getApiUrl('/api/articles'))
             .then(response => response.json())
             .then(result => {
                 const articles = result.data || result;
@@ -866,7 +861,7 @@
     }
 
     function loadTypeMouvements() {
-        fetch('/api/type-mouvements')
+        fetch(getApiUrl('/api/type-mouvements'))
             .then(response => response.json())
             .then(result => {
                 const types = result.data || result;
@@ -892,7 +887,7 @@
         const receptionnaire = document.getElementById('modal_receptionnaire').value;
 
         if (dateMouvement && typeMouvement && designation && quantiteServis && codeArticle && operation) {
-            fetch('/api/mouvements', {
+            fetch(getApiUrl('/api/mouvements'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -945,8 +940,8 @@
         loadTypeMouvementsForOperation();
     }
 
-    function loadTypeMouvementsForOperation() {
-        fetch('/api/type-mouvements')
+    function loadTypeMouvementsForOperation(selectedId = null) {
+        fetch(getApiUrl('/api/type-mouvements'))
             .then(response => response.json())
             .then(result => {
                 const types = result.data || result;
@@ -954,7 +949,7 @@
                 if (!select) return;
                 select.innerHTML = '<option value="">-- Sélectionner --</option>';
                 types.forEach(type => {
-                    select.innerHTML += `<option value="${type.id_type_mouvement}">${type.mouvement}</option>`;
+                    select.innerHTML += `<option value="${type.id_type_mouvement}"${selectedId && selectedId == type.id_type_mouvement ? ' selected' : ''}>${type.mouvement}</option>`;
                 });
             });
     }
@@ -965,20 +960,28 @@
 
     function saveOperation() {
         const libelleOperation = document.getElementById('modal_libelle_operation').value;
-        const typeMouvementId = document.getElementById('modal_type_mouvement_operation').value;
+        const typeMouvementValue = document.getElementById('modal_type_mouvement_value').value;
+        let typeMouvementId = document.getElementById('modal_type_mouvement_operation')?.value;
 
-        if (libelleOperation && typeMouvementId) {
-            fetch('/api/operations', {
+        // Si l'utilisateur vient de créer un nouveau type de mouvement, on le récupère via l'input
+        // Sinon, on prend la valeur du select (cas normal)
+        let mouvementPayload = {};
+        if (typeMouvementValue && !typeMouvementId) {
+            // L'utilisateur a saisi un nouveau type de mouvement
+            mouvementPayload = { libelleOperation, type_mouvement: typeMouvementValue };
+        } else if (libelleOperation && typeMouvementId) {
+            mouvementPayload = { libelleOperation, type_mouvement_id: parseInt(typeMouvementId) };
+        }
+
+        if (libelleOperation && (typeMouvementId || typeMouvementValue)) {
+            fetch(getApiUrl('/api/operations'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    libelleOperation,
-                    type_mouvement_id: parseInt(typeMouvementId)
-                })
+                body: JSON.stringify(mouvementPayload)
             })
             .then(async response => {
                 const contentType = response.headers.get('content-type');
@@ -1052,7 +1055,7 @@
     function saveTypeMouvement() {
         const typeMouvementValue = document.getElementById('modal_type_mouvement_value').value;
         if (typeMouvementValue) {
-            fetch('/api/type-mouvements', {
+            fetch(getApiUrl('/api/type-mouvements'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1070,7 +1073,14 @@
                     if (data.success || response.status === 201) {
                         alert('Type de mouvement créé avec succès !');
                         closeTypeMouvementModal();
-                        window.location.reload();
+                        // Recharge dynamiquement la liste dans le select du modal opération et auto-sélectionne le nouveau type
+                        if (data.data && data.data.id_type_mouvement) {
+                            loadTypeMouvementsForOperation(data.data.id_type_mouvement);
+                        } else {
+                            loadTypeMouvementsForOperation();
+                        }
+                        // Efface le champ input
+                        document.getElementById('modal_type_mouvement_value').value = '';
                     } else {
                         alert('Erreur lors de la création du type de mouvement : ' + (data.message || JSON.stringify(data)));
                     }
@@ -1085,6 +1095,16 @@
         } else {
             alert('Veuillez sélectionner un type de mouvement.');
         }
+    }
+
+    // Fonction utilitaire pour gérer l'URL d'API dynamiquement
+    function getApiUrl(path) {
+        let base = window.location.origin;
+        // Si on est dans /public/ ou un sous-dossier, adapte le chemin
+        if (window.location.pathname.includes('/public/')) {
+            base += '/stockDb/public';
+        }
+        return base + path;
     }
     </script>
 </body>

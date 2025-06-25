@@ -19,8 +19,13 @@ class TypeMouvementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'mouvement' => 'required|in:Entrée,Sortie,Retour'
+            'mouvement' => 'required|string|max:255'
         ]);
+        // Vérifier unicité
+        $existing = TypeMouvement::where('mouvement', $request->mouvement)->first();
+        if ($existing) {
+            return response()->json(['success' => false, 'message' => 'Ce type de mouvement existe déjà.'], 409);
+        }
         $typeMouvement = new \App\Models\TypeMouvement();
         $typeMouvement->mouvement = $request->mouvement;
         $typeMouvement->save();
