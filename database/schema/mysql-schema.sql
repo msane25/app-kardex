@@ -133,13 +133,13 @@ CREATE TABLE `mouvements` (
   `quantiteServis` int NOT NULL,
   `receptionnaire` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `matricule` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idOperation` bigint unsigned NOT NULL,
+  `id_operation` bigint unsigned NOT NULL,
   `codeArticle` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`idMouvement`),
   KEY `mouvements_matricule_foreign` (`matricule`),
-  KEY `mouvements_idoperation_foreign` (`idOperation`),
+  KEY `mouvements_idoperation_foreign` (`id_Operation`),
   KEY `mouvements_codearticle_foreign` (`codeArticle`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -147,12 +147,12 @@ DROP TABLE IF EXISTS `operations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `operations` (
-  `idOperation` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_operation` bigint unsigned NOT NULL AUTO_INCREMENT,
   `type_operation` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `libelle` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`idOperation`)
+  PRIMARY KEY (`id_Operation`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `organisations`;

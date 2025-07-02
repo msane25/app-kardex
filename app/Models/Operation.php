@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,15 +10,20 @@ class Operation extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'type_operation',
-        'destination_operation',
-        'date_operation',
-        'description'
-    ];
+    // Nom de la connexion (OK)
+    protected $connection = 'gestion_utilisateurs';
 
-    protected $casts = [
-        'date_operation' => 'date'
+    // Précise que la clé primaire n'est pas "id" mais "idOperation"
+    protected $primaryKey = 'id_operation';
+
+    // Laravel suppose que la clé primaire est un entier auto-incrémenté
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    protected $fillable = [
+        'libelle',
+        'id_type_mouvement',
+        'article_id',
     ];
 
     /**
@@ -27,5 +33,20 @@ class Operation extends Model
     {
         return $this->hasMany(Mouvement::class);
     }
-}
 
+    /**
+     * Get the article associated with this operation.
+     */
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
+
+    /**
+     * Get the type of mouvement associated with this operation.
+     */
+    public function typeMouvement()
+    {
+        return $this->belongsTo(TypeMouvement::class, 'id_type_mouvement', 'id_type_mouvement');
+    }
+}

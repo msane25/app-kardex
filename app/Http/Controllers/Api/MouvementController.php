@@ -13,30 +13,69 @@ class MouvementController extends Controller
 {
     public function index()
     {
-        $mouvements = Mouvement::with(['article', 'operation'])->get();
-        return response()->json($mouvements);
+        $mouvements = \App\Models\Mouvement::with(['typeMouvement', 'operation', 'article'])->get();
+        return response()->json(['data' => $mouvements]);
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'date_mouvement' => 'required|date',
-            'type_mouvement_id' => 'required|exists:type_mouvements,id_type_mouvement',
-            'quantite' => 'required|integer|min:1',
-            'article_id' => 'required|exists:articles,id',
-            'operation_id' => 'required|exists:operations,id',
+            'type_mouvement_id' => 'required|integer|exists:type_mouvements,id_type_mouvement',
+            'quantite' => 'required|numeric',
+            'quantiteServis' => 'required|numeric',
+            'code_article' => 'required|string|exists:articles,code_article',
+            'operation_id' => 'required|integer|exists:operations,id_operation',
             'destination' => 'nullable|string',
             'fournisseur' => 'nullable|string',
-            'document_number' => 'required|string|unique:mouvements'
+            'document_number' => 'nullable|string',
+            'designation' => 'nullable|string',
+            'receptionnaire' => 'nullable|string',
+            'demandeur' => 'nullable|string',
+            'matricule' => 'nullable|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        // Mapping automatique si 'quantite' est présent
+        if (isset($validated['quantite'])) {
+            $validated['quantiteServis'] = $validated['quantite'];
         }
 
+        $mouvement = Mouvement::create($validated);
+
+        return response()->json(['success' => true, 'data' => $mouvement], 201);
+    }
+
+    public function show($id)
+    {
+        $mouvement = Mouvement::with('operation')->findOrFail($id);
+        return response()->json($mouvement);
+    }
+
+    public function update(Request $request, $id)
+    {
         try {
+            $validator = Validator::make($request->all(), [
+                'date_mouvement' => 'required|date',
+                'type_mouvement_id' => 'required|exists:type_mouvements,id_type_mouvement',
+                'quantite' => 'required|integer|min:1',
+                'article_id' => 'required|exists:articles,id',
+                'operation_id' => 'required|exists:operations,id',
+                'destination' => 'nullable|string',
+                'fournisseur' => 'nullable|string',
+                'document_number' => 'required|string|unique:mouvements,document_number,' . $id
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur de validation',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             DB::beginTransaction();
 
+            $mouvement = Mouvement::findOrFail($id);
             $article = Article::findOrFail($request->article_id);
             $quantite = $request->quantite;
 
@@ -44,74 +83,26 @@ class MouvementController extends Controller
             $typeMouvement = $request->type_mouvement_id;
             $type = DB::table('type_mouvements')->where('id_type_mouvement', $typeMouvement)->value('mouvement');
 
-            // Mise à jour du stock en fonction du type de mouvement
-            if ($type === 'Entrée') {
-                $article->quantite_stock += $quantite;
-            } elseif ($type === 'Sortie') {
-                if ($article->quantite_stock < $quantite) {
-                    return response()->json([
-                        'error' => 'Stock insuffisant pour cette sortie'
-                    ], 400);
-                }
-                $article->quantite_stock -= $quantite;
-            } // Pour "Retour", à adapter selon la logique métier
-
-            $article->save();
-
-            $mouvement = Mouvement::create($request->all());
-
-            DB::commit();
-
-            return response()->json($mouvement, 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Erreur lors de l\'enregistrement du mouvement'], 500);
-        }
-    }
-
-    public function show(Mouvement $mouvement)
-    {
-        return response()->json($mouvement->load(['article', 'operation']));
-    }
-
-    public function update(Request $request, Mouvement $mouvement)
-    {
-        $validator = Validator::make($request->all(), [
-            'date_mouvement' => 'required|date',
-            'type_mouvement_id' => 'required|exists:type_mouvements,id_type_mouvement',
-            'quantite' => 'required|integer|min:1',
-            'article_id' => 'required|exists:articles,id',
-            'operation_id' => 'required|exists:operations,id',
-            'destination' => 'nullable|string',
-            'fournisseur' => 'nullable|string',
-            'document_number' => 'required|string|unique:mouvements,document_number,' . $mouvement->id
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        try {
-            DB::beginTransaction();
-
             // Annuler l'ancien mouvement
-            $article = Article::findOrFail($mouvement->article_id);
-            if ($mouvement->type_mouvement === 'entree') {
+            $oldTypeMouvement = DB::table('type_mouvements')->where('id_type_mouvement', $mouvement->type_mouvement_id)->value('mouvement');
+            if ($oldTypeMouvement === 'Entrée') {
                 $article->quantite_stock -= $mouvement->quantite;
-            } else {
+            } elseif ($oldTypeMouvement === 'Sortie') {
                 $article->quantite_stock += $mouvement->quantite;
             }
 
             // Appliquer le nouveau mouvement
-            if ($request->type_mouvement === 'entree') {
-                $article->quantite_stock += $request->quantite;
-            } else {
-                if ($article->quantite_stock < $request->quantite) {
+            if ($type === 'Entrée') {
+                $article->quantite_stock += $quantite;
+            } elseif ($type === 'Sortie') {
+                if ($article->quantite_stock < $quantite) {
+                    DB::rollBack();
                     return response()->json([
-                        'error' => 'Stock insuffisant pour cette sortie'
+                        'success' => false,
+                        'message' => 'Stock insuffisant pour cette sortie'
                     ], 400);
                 }
-                $article->quantite_stock -= $request->quantite;
+                $article->quantite_stock -= $quantite;
             }
 
             $article->save();
@@ -119,24 +110,35 @@ class MouvementController extends Controller
 
             DB::commit();
 
-            return response()->json($mouvement);
+            return response()->json([
+                'success' => true,
+                'data' => $mouvement,
+                'message' => 'Mouvement modifié avec succès'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Erreur lors de la mise à jour du mouvement'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la modification du mouvement: ' . $e->getMessage()
+            ], 500);
         }
     }
 
-    public function destroy(Mouvement $mouvement)
+    public function destroy($id)
     {
         try {
             DB::beginTransaction();
 
+            $mouvement = Mouvement::findOrFail($id);
             $article = Article::findOrFail($mouvement->article_id);
             
+            // Récupérer le type de mouvement
+            $typeMouvement = DB::table('type_mouvements')->where('id_type_mouvement', $mouvement->type_mouvement_id)->value('mouvement');
+            
             // Annuler l'effet du mouvement sur le stock
-            if ($mouvement->type_mouvement === 'entree') {
+            if ($typeMouvement === 'Entrée') {
                 $article->quantite_stock -= $mouvement->quantite;
-            } else {
+            } elseif ($typeMouvement === 'Sortie') {
                 $article->quantite_stock += $mouvement->quantite;
             }
 
@@ -145,10 +147,16 @@ class MouvementController extends Controller
 
             DB::commit();
 
-            return response()->json(null, 204);
+            return response()->json([
+                'success' => true,
+                'message' => 'Mouvement supprimé avec succès'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Erreur lors de la suppression du mouvement'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression du mouvement: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

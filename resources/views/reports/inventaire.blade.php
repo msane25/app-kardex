@@ -176,7 +176,7 @@
         <tbody>
             @forelse($inventaireComplet as $article)
                 <tr>
-                    <td><strong>{{ $article->codeArticle }}</strong></td>
+                    <td><strong>{{ $article->code_article }}</strong></td>
                     <td>{{ $article->description }}</td>
                     <td>{{ $article->uniteDeMesure }}</td>
                     <td>{{ number_format($article->prixUnitaire ?? 0, 0, ',', ' ') }} FCFA</td>

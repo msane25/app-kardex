@@ -16,7 +16,8 @@ return new class extends Migration
             $table->date('date_mouvement');
             $table->string('type_mouvement');
             $table->integer('quantite');
-            $table->foreignId('article_id')->constrained()->onDelete('cascade');
+            $table->string('code_article');
+            $table->foreign('code_article')->references('code_article')->on('articles')->onDelete('cascade');
             $table->foreignId('operation_id')->constrained()->onDelete('cascade');
             $table->string('destination')->nullable();
             $table->string('fournisseur')->nullable();

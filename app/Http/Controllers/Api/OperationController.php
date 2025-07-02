@@ -15,79 +15,54 @@ class OperationController extends Controller
      */
     public function store(Request $request)
     {
-        // Vérifier l'authentification (Laravel renverra 401 automatiquement, mais on force le JSON)
-        if (!$request->user()) {
-            return response()->json(['success' => false, 'message' => 'Non authentifié'], 401);
-        }
-
         $data = $request->all();
-        // Gestion du type de mouvement : id ou nom
-        $typeMouvementId = $data['type_mouvement_id'] ?? null;
-        $typeMouvementNom = $data['type_mouvement'] ?? $data['mouvement'] ?? null;
-        $destinationOperation = $data['destinationOperation'] ?? $data['destination_operation'] ?? null;
-        $libelleOperation = $data['libelleOperation'] ?? $data['libelle_operation'] ?? null;
+        
+        // Log des données reçues
+        \Log::info('Données reçues pour création opération:', $data);
+        
+        // Nouvelle logique : on attend 'libelle' et 'id_type_mouvement' du frontend
+        $libelle = $data['libelle'] ?? $data['libelleOperation'] ?? $data['libelle_operation'] ?? null;
+        $idTypeMouvement = $data['id_type_mouvement'] ?? $data['idTypeMouvement'] ?? $data['type_mouvement_id'] ?? null;
 
-        // Validation de base
+        // Log des données extraites
+        \Log::info('Données extraites:', [
+            'libelle' => $libelle,
+            'id_type_mouvement' => $idTypeMouvement
+        ]);
+
         $validator = Validator::make([
-            'destination_operation' => $destinationOperation,
-            'description' => $libelleOperation,
-            'date_operation' => now()->toDateString(),
+            'libelle' => $libelle,
+            'id_type_mouvement' => $idTypeMouvement,
         ], [
-            'destination_operation' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date_operation' => 'required|date',
+            'libelle' => 'required|string|max:255|unique:operations,libelle',
+            'id_type_mouvement' => 'nullable|integer|exists:type_mouvements,id_type_mouvement',
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Erreur de validation:', $validator->errors()->toArray());
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur de validation',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+                'debug_data' => [
+                    'received_data' => $data,
+                    'extracted_data' => [
+                        'libelle' => $libelle,
+                        'id_type_mouvement' => $idTypeMouvement
+                    ]
+                ]
             ], 422);
         }
 
-        // Gestion du type de mouvement
-        $typeOperation = null;
-        $typeMouvementModel = null;
-        if ($typeMouvementId) {
-            $typeMouvementModel = TypeMouvement::find($typeMouvementId);
-            if (!$typeMouvementModel) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Type de mouvement introuvable',
-                    'errors' => ['type_mouvement_id' => ['Type de mouvement non trouvé']]
-                ], 422);
-            }
-            $typeOperation = $typeMouvementModel->mouvement;
-        } elseif ($typeMouvementNom) {
-            $typeMouvementModel = TypeMouvement::where('mouvement', $typeMouvementNom)->first();
-            if (!$typeMouvementModel) {
-                // Création du type de mouvement s'il n'existe pas
-                $typeMouvementModel = TypeMouvement::create(['mouvement' => $typeMouvementNom]);
-            }
-            $typeOperation = $typeMouvementModel->mouvement;
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Type de mouvement requis',
-                'errors' => ['type_mouvement' => ['Le type de mouvement est requis']]
-            ], 422);
-        }
-
-        // Création de l'opération
         $operation = Operation::create([
-            'type_operation' => $typeOperation,
-            'destination_operation' => $destinationOperation,
-            'description' => $libelleOperation,
-            'date_operation' => now()->toDateString(),
+            'libelle' => $libelle,
+            'id_type_mouvement' => $idTypeMouvement,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Opération créée avec succès',
-            'data' => $operation,
-            'type_mouvement_id' => $typeMouvementModel->id_type_mouvement,
-            'type_mouvement' => $typeMouvementModel->mouvement
+            'data' => $operation
         ], 201);
     }
 
@@ -96,34 +71,97 @@ class OperationController extends Controller
      */
     public function index()
     {
-        $operations = Operation::with('mouvements')->get();
-        return response()->json($operations);
+        $operations = \App\Models\Operation::with('typeMouvement')->get();
+        return response()->json(['success' => true, 'data' => $operations]);
     }
 
     public function show(Operation $operation)
     {
-        return response()->json($operation->load('mouvements'));
-    }
-
-    public function update(Request $request, Operation $operation)
-    {
-        $validator = Validator::make($request->all(), [
-            'type_operation' => 'required|string|max:255',
-            'date_operation' => 'required|date',
-            'description' => 'nullable|string'
+        return response()->json([
+            'success' => true,
+            'data' => $operation->load(['mouvements', 'article'])
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $operation->update($request->all());
-        return response()->json($operation);
     }
 
-    public function destroy(Operation $operation)
+    public function update(Request $request, $id)
     {
-        $operation->delete();
-        return response()->json(null, 204);
+        try {
+            $data = $request->all();
+            $libelle = $data['libelle'] ?? $data['libelleOperation'] ?? $data['libelle_operation'] ?? null;
+            $idTypeMouvement = $data['id_type_mouvement'] ?? $data['idTypeMouvement'] ?? $data['type_mouvement_id'] ?? null;
+
+            $validator = Validator::make([
+                'libelle' => $libelle,
+                'id_type_mouvement' => $idTypeMouvement,
+            ], [
+                'libelle' => 'required|string|max:255|unique:operations,libelle,' . $id . ',id_operation',
+                'id_type_mouvement' => 'required|integer|exists:type_mouvements,id_type_mouvement',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur de validation',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $operation = Operation::findOrFail($id);
+            
+            // Vérifier unicité (sauf pour l'enregistrement actuel)
+            $existing = Operation::where('libelle', $libelle)
+                               ->where('id_operation', '!=', $id)
+                               ->first();
+            if ($existing) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Cette opération existe déjà.'
+                ], 409);
+            }
+
+            $operation->update([
+                'libelle' => $libelle,
+                'id_type_mouvement' => $idTypeMouvement,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $operation,
+                'message' => 'Opération modifiée avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la modification de l\'opération: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $operation = Operation::findOrFail($id);
+            
+            // Vérifier s'il y a des mouvements associés
+            $mouvementsCount = $operation->mouvements()->count();
+            if ($mouvementsCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Impossible de supprimer cette opération car elle est utilisée par ' . $mouvementsCount . ' mouvement(s).'
+                ], 400);
+            }
+
+            $operation->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Opération supprimée avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de l\'opération: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

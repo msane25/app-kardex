@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('designation');
-            $table->string('reference')->unique();
+            $table->string('code_article')->unique();
             $table->decimal('prix_unitaire', 10, 2);
             $table->string('unite_mesure', 20);
             $table->integer('quantite_stock')->default(0);

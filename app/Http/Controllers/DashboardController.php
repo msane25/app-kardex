@@ -13,22 +13,22 @@ class DashboardController extends Controller
     {
         // Statistiques principales
         $totalArticles = Article::count();
-        $articlesEnStock = Article::where('quantiteStock', '>', 0)->count();
-        $articlesAlerte = Article::where('quantiteStock', '<=', DB::raw('seuilAlerte'))
-                                ->where('quantiteStock', '>', 0)->count();
+        $articlesEnStock = Article::where('quantite_stock', '>', 0)->count();
+        $articlesAlerte = Article::where('quantite_stock', '<=', DB::raw('seuil_critique'))
+                                ->where('quantite_stock', '>', 0)->count();
         $totalMouvements = Mouvement::count();
 
         // Articles par statut
-        $articlesDisponibles = Article::where('quantiteStock', '>', DB::raw('seuilAlerte'))->count();
-        $articlesEpuises = Article::where('quantiteStock', '<=', 0)->count();
+        $articlesDisponibles = Article::where('quantite_stock', '>', DB::raw('seuil_critique'))->count();
+        $articlesEpuises = Article::where('quantite_stock', '<=', 0)->count();
 
         // Valeur totale du stock
-        $valeurTotaleStock = Article::sum(DB::raw('prixUnitaire * quantiteStock'));
+        $valeurTotaleStock = Article::sum(DB::raw('prix_unitaire * quantite_stock'));
 
         // Articles en alerte (liste détaillée)
-        $articlesAlerteList = Article::where('quantiteStock', '<=', DB::raw('seuilAlerte'))
-                                    ->where('quantiteStock', '>', 0)
-                                    ->orderBy('quantiteStock', 'asc')
+        $articlesAlerteList = Article::where('quantite_stock', '<=', DB::raw('seuil_critique'))
+                                    ->where('quantite_stock', '>', 0)
+                                    ->orderBy('quantite_stock', 'asc')
                                     ->limit(10)
                                     ->get();
 
@@ -39,7 +39,7 @@ class DashboardController extends Controller
                                     ->get();
 
         // Inventaire complet
-        $inventaireComplet = Article::orderBy('codeArticle')->get();
+        $inventaireComplet = Article::orderBy('code_article')->get();
 
         // Données pour les graphiques
         $mouvementsParMois = $this->getMouvementsParMois();
@@ -90,8 +90,8 @@ class DashboardController extends Controller
     // Méthode pour générer un rapport PDF (optionnel)
     public function generateReport()
     {
-        $inventaireComplet = Article::orderBy('codeArticle')->get();
-        $valeurTotaleStock = Article::sum(DB::raw('prixUnitaire * quantiteStock'));
+        $inventaireComplet = Article::orderBy('code_article')->get();
+        $valeurTotaleStock = Article::sum(DB::raw('prix_unitaire * quantite_stock'));
         
         // Ici vous pourriez intégrer une bibliothèque PDF comme DomPDF
         // Pour l'instant, on retourne une vue spéciale pour l'impression

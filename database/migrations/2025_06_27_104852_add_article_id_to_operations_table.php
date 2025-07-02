@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('operations', function (Blueprint $table) {
-            $table->increments('id_operation');
-            $table->string('type_operation');
-            $table->date('date_operation');
-            $table->text('description')->nullable();
-            $table->timestamps();
+        Schema::table('operations', function (Blueprint $table) {
+            $table->foreignId('article_id')->nullable()->constrained('articles')->onDelete('set null');
         });
     }
 
@@ -25,6 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('operations');
+        Schema::table('operations', function (Blueprint $table) {
+            $table->dropForeign(['article_id']);
+            $table->dropColumn('article_id');
+        });
     }
 };

@@ -68,7 +68,7 @@
                     <tbody>
                         @forelse($articles as $article)
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2 font-medium">{{ $article->codeArticle }}</td>
+                                <td class="px-4 py-2 font-medium">{{ $article->code_article }}</td>
                                 <td class="px-4 py-2">{{ $article->description }}</td>
                                 <td class="px-4 py-2">{{ $article->quantiteInitiale }}</td>
                                 <td class="px-4 py-2">{{ $article->quantiteStock }}</td>
@@ -93,39 +93,85 @@
                 <table class="min-w-full table-auto">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-2 text-left">Date Mouvement</th>
-                            <th class="px-4 py-2 text-left">Opération</th>
-                            <th class="px-4 py-2 text-left">Code Article</th>
-                            <th class="px-4 py-2 text-left">Description</th>
-                            <th class="px-4 py-2 text-left">Demandeur (Service)</th>
-                            <th class="px-4 py-2 text-left">Direction</th>
-                            <th class="px-4 py-2 text-left">Fournisseur</th>
-                            <th class="px-4 py-2 text-left">Numéro Commande</th>
-                            <th class="px-4 py-2 text-left">Document Associé</th>
-                            <th class="px-4 py-2 text-left">Quantité Servis</th>
-                            <th class="px-4 py-2 text-left">Réceptionnaire</th>
+                            <th>Date Mouvement</th>
+                            <th>Mouvement</th>
+                            <th>Opération</th>
+                            <th>Code Article</th>
+                            <th>Désignation</th>
+                            <th>Demandeur / Direction</th>
+                            <th>Fournisseur</th>
+                            <th>N° Commande</th>
+                            <th>Doc Associé</th>
+                            <th>Quantité Servis</th>
+                            <th>Réceptionnaire</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($mouvements as $mouvement)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2">{{ is_string($mouvement->date_mouvement) ? $mouvement->date_mouvement : $mouvement->date_mouvement->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->operation ?? 'N/A' }}</td>
-                                <td class="px-4 py-2 font-mono text-sm bg-blue-50 px-2 py-1 rounded">{{ $mouvement->article->codeArticle ?? $mouvement->codeArticle ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->article->description ?? $mouvement->designation ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->demandeur ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->direction ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->fournisseur ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->numeroCommande ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->document_number ?? $mouvement->documentAssocie ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->quantiteServis ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $mouvement->receptionnaire ?? 'N/A' }}</td>
+                            <tr>
+                                <td>{{ $mouvement->date_mouvement }}</td>
+                                <td>{{ $mouvement->typeMouvement->libelle ?? '' }}</td>
+                                <td>{{ $mouvement->operation->libelle ?? '' }}</td>
+                                <td>{{ $mouvement->codeArticle }}</td>
+                                <td>{{ $mouvement->article->designation ?? '' }}</td>
+                                <td>{{ $mouvement->demandeur }} / {{ $mouvement->direction }}</td>
+                                <td>{{ $mouvement->fournisseur }}</td>
+                                <td>{{ $mouvement->numeroCommande }}</td>
+                                <td>{{ $mouvement->document_number }}</td>
+                                <td>{{ $mouvement->quantiteServis }}</td>
+                                <td>{{ $mouvement->receptionnaire }}</td>
+                                <td>
+                                    <!-- Boutons d'action (ex: voir, éditer, supprimer) -->
+                                    <a href="{{ route('mouvements.show', $mouvement->idMouvement) }}">Voir</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="11" class="px-4 py-4 text-center text-gray-500">Aucun mouvement enregistré</td>
                             </tr>
                         @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Tableau de récupération des Types de Mouvement --}}
+        <div class="mt-12">
+            <h2 class="text-xl font-bold mb-4 text-blue-700">Tableau de récupération des Types de Mouvement</h2>
+            <div class="overflow-x-auto rounded-lg shadow">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-blue-100">
+                        <tr>
+                            <th class="px-4 py-2 border-b">ID</th>
+                            <th class="px-4 py-2 border-b">Type de Mouvement</th>
+                            <th class="px-4 py-2 border-b">Date de Création</th>
+                            <th class="px-4 py-2 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{-- @foreach($types as $type) ... @endforeach --}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Tableau de récupération des Opérations --}}
+        <div class="mt-12">
+            <h2 class="text-xl font-bold mb-4 text-purple-700">Tableau de récupération des Opérations</h2>
+            <div class="overflow-x-auto rounded-lg shadow">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-purple-100">
+                        <tr>
+                            <th class="px-4 py-2 border-b">ID</th>
+                            <th class="px-4 py-2 border-b">Libellé Opération</th>
+                            <th class="px-4 py-2 border-b">Type de Mouvement</th>
+                            <th class="px-4 py-2 border-b">Date de Création</th>
+                            <th class="px-4 py-2 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{-- @foreach($operations as $operation) ... @endforeach --}}
                     </tbody>
                 </table>
             </div>
