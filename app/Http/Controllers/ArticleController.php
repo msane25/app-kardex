@@ -6,6 +6,8 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ArticlesImport;
 
 class ArticleController extends Controller
 {
@@ -34,13 +36,11 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'codeArticle' => 'required|string|max:50|unique:articles,codeArticle',
+            'codeArticle' => 'required|string|max:50|unique:articles,code_article',
             'description' => 'required|string|max:255',
             'uniteDeMesure' => 'required|string|max:50',
             'quantiteStock' => 'required|integer|min:0',
             'seuilAlerte' => 'required|integer|min:0',
-            'quantiteInitiale' => 'required|integer|min:0',
-            'idOrganisation' => 'required|integer|min:1',
             'prixUnitaire' => 'nullable|numeric|min:0',
         ]);
 
@@ -49,14 +49,12 @@ class ArticleController extends Controller
         }
 
         $article = Article::create([
-            'codeArticle' => $request->codeArticle,
+            'code_article' => $request->codeArticle,
             'description' => $request->description,
-            'uniteDeMesure' => $request->uniteDeMesure,
-            'quantiteStock' => $request->quantiteStock,
-            'seuilAlerte' => $request->seuilAlerte,
-            'quantiteInitiale' => $request->quantiteInitiale,
-            'idOrganisation' => $request->idOrganisation,
-            'prixUnitaire' => $request->prixUnitaire ?? 0,
+            'unite_mesure' => $request->uniteDeMesure,
+            'quantite_stock' => $request->quantiteStock,
+            'seuil_critique' => $request->seuilAlerte,
+            'prix_unitaire' => $request->prixUnitaire ?? 0,
         ]);
         return response()->json(['success' => true, 'data' => $article], 201);
     }
@@ -69,13 +67,11 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article)
     {
         $validator = Validator::make($request->all(), [
-            'codeArticle' => 'required|string|max:50|unique:articles,codeArticle,' . $article->id,
+            'codeArticle' => 'required|string|max:50|unique:articles,code_article,' . $article->id,
             'description' => 'required|string|max:255',
             'uniteDeMesure' => 'required|string|max:50',
             'quantiteStock' => 'required|integer|min:0',
             'seuilAlerte' => 'required|integer|min:0',
-            'quantiteInitiale' => 'required|integer|min:0',
-            'idOrganisation' => 'required|integer|min:1',
             'prixUnitaire' => 'nullable|numeric|min:0',
         ]);
 
@@ -84,14 +80,12 @@ class ArticleController extends Controller
         }
 
         $article->update([
-            'codeArticle' => $request->codeArticle,
+            'code_article' => $request->codeArticle,
             'description' => $request->description,
-            'uniteDeMesure' => $request->uniteDeMesure,
-            'quantiteStock' => $request->quantiteStock,
-            'seuilAlerte' => $request->seuilAlerte,
-            'quantiteInitiale' => $request->quantiteInitiale,
-            'idOrganisation' => $request->idOrganisation,
-            'prixUnitaire' => $request->prixUnitaire,
+            'unite_mesure' => $request->uniteDeMesure,
+            'quantite_stock' => $request->quantiteStock,
+            'seuil_critique' => $request->seuilAlerte,
+            'prix_unitaire' => $request->prixUnitaire,
         ]);
         return response()->json($article);
     }
@@ -100,5 +94,25 @@ class ArticleController extends Controller
     {
         $article->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Import articles from an Excel file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new ArticlesImport, $request->file('excel_file'));
+            return response()->json(['success' => true, 'message' => 'Importation réussie.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'importation : ' . $e->getMessage()], 500);
+        }
     }
 }

@@ -10,18 +10,15 @@ class Article extends Model
     use HasFactory;
 
     protected $fillable = [
-        'codeArticle',
+        'code_article',
         'description',
-        'uniteDeMesure',
-        'quantiteStock',
-        'seuilAlerte',
-        'quantiteInitiale',
-        'idOrganisation',
-        'prixUnitaire',
+        'unite_mesure',
+        'quantite_stock',
+        'seuil_critique',
+        'prix_unitaire',
     ];
 
     protected $casts = [
-        'quantite_initiale' => 'float',
         'quantite_stock' => 'float',
         'seuil_alerte' => 'float',
         'prix_unitaire' => 'float',
@@ -32,7 +29,7 @@ class Article extends Model
      */
     public function organisation()
     {
-        return $this->belongsTo(Organisation::class);
+        return $this->belongsTo(Organisation::class, 'id_organisation');
     }
 
     /**

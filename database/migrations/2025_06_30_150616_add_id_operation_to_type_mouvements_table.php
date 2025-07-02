@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('operations', function (Blueprint $table) {
-            $table->increments('id_operation');
-            $table->string('type_operation');
-            $table->date('date_operation');
-            $table->text('description')->nullable();
-            $table->timestamps();
+        Schema::table('type_mouvements', function (Blueprint $table) {
+            //
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('operations');
+        Schema::table('type_mouvements', function (Blueprint $table) {
+            //
+        });
     }
 };

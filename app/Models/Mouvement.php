@@ -17,7 +17,11 @@ class Mouvement extends Model
         'operation_id',
         'destination',
         'fournisseur',
-        'document_number'
+        'document_number',
+        'designation',
+        'demandeur',
+        'quantiteServis',
+        'matricule',
     ];
 
     protected $casts = [
@@ -28,22 +32,22 @@ class Mouvement extends Model
     /**
      * Get the article that owns the mouvement.
      */
-    public function article(): BelongsTo
+    public function article()
     {
-        return $this->belongsTo(Article::class);
+        return $this->belongsTo(Article::class, 'code_article', 'code_article');
     }
 
     /**
      * Get the operation that owns the mouvement.
      */
-    public function operation(): BelongsTo
+    public function operation()
     {
-        return $this->belongsTo(Operation::class);
+        return $this->belongsTo(\App\Models\Operation::class, 'id_operation', 'id_operation');
     }
 
     public function typeMouvement()
     {
-        return $this->belongsTo(TypeMouvement::class, 'type_mouvement_id');
+        return $this->belongsTo(\App\Models\TypeMouvement::class, 'typeMouvement', 'id_type_mouvement');
     }
 }
 

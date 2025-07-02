@@ -9,6 +9,8 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\MagasinierController;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\TypeMouvementController;
+use App\Http\Controllers\OperationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +42,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
     Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 
+    // Importation d'articles via Excel
+    Route::post('/articles/import', [ArticleController::class, 'import'])->name('articles.import');
+
     // Routes pour le stock
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 
@@ -59,6 +64,13 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 
+Route::get('/type-mouvements', [App\Http\Controllers\TypeMouvementController::class, 'index'])->name('type_mouvements.index');
+
+Route::get('/type-mouvements/{id}/edit', [App\Http\Controllers\TypeMouvementController::class, 'edit'])->name('type_mouvements.edit');
+Route::delete('/type-mouvements/{id}', [App\Http\Controllers\TypeMouvementController::class, 'destroy'])->name('type_mouvements.destroy');
+
+Route::resource('type-mouvements', App\Http\Controllers\TypeMouvementController::class);
+Route::resource('operations', App\Http\Controllers\OperationController::class);
 
 require __DIR__.'/auth.php';
 require __DIR__.'/dashboard.php';

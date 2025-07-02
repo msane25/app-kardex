@@ -158,7 +158,7 @@
                         <tbody>
                             @forelse($articlesAlerteList ?? [] as $article)
                                 <tr class="border-b hover:bg-red-50">
-                                    <td class="px-4 py-2 font-medium text-red-600">{{ $article->codeArticle }}</td>
+                                    <td class="px-4 py-2 font-medium text-red-600">{{ $article->code_article }}</td>
                                     <td class="px-4 py-2">{{ $article->description }}</td>
                                     <td class="px-4 py-2 font-bold text-red-600">{{ $article->quantiteStock }}</td>
                                     <td class="px-4 py-2">{{ $article->seuilAlerte }}</td>
@@ -250,7 +250,7 @@
                     <tbody>
                         @forelse($inventaireComplet ?? [] as $article)
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2 font-medium">{{ $article->codeArticle }}</td>
+                                <td class="px-4 py-2 font-medium">{{ $article->code_article }}</td>
                                 <td class="px-4 py-2">{{ $article->description }}</td>
                                 <td class="px-4 py-2">{{ $article->uniteDeMesure }}</td>
                                 <td class="px-4 py-2">{{ number_format($article->prixUnitaire ?? 0, 0, ',', ' ') }} FCFA</td>

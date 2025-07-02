@@ -66,7 +66,7 @@ class StockController extends Controller
                     'fournisseur' => $request->fournisseur ?? 'Non spécifié',
                     'matricule' => auth()->user()->matricule ?? 'ADMIN001',
                     'codeArticle' => $request->nomenclature,
-                    'idOperation' => $operationId,
+                    'id_operation' => $operationId,
                     'destination' => $request->destination_operation ?? 'Non spécifiée',
                 ]);
             }
@@ -135,7 +135,7 @@ class StockController extends Controller
         if (!$typeMouvement) {
             // Si aucun type de mouvement n'est spécifié, utiliser une opération par défaut
             $defaultOperation = Operation::first();
-            return $defaultOperation ? $defaultOperation->idOperation : null;
+            return $defaultOperation ? $defaultOperation->id_operation : null;
         }
         
         $operation = Operation::where('type_operation', $typeMouvement)->first();
@@ -148,7 +148,7 @@ class StockController extends Controller
             ]);
         }
         
-        return $operation->idOperation;
+        return $operation->id_operation;
     }
 
     public function index()

@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         $articles = [
             [
                 'designation' => 'Ordinateur portable',
-                'reference' => 'ORD-001',
+                'code_article' => 'ORD-001',
                 'prix_unitaire' => 1200.00,
                 'unite_mesure' => 'unité',
                 'quantite_stock' => 10,
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'designation' => 'Imprimante laser',
-                'reference' => 'IMP-001',
+                'code_article' => 'IMP-001',
                 'prix_unitaire' => 300.00,
                 'unite_mesure' => 'unité',
                 'quantite_stock' => 5,
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'designation' => 'Papier A4',
-                'reference' => 'PAP-001',
+                'code_article' => 'PAP-001',
                 'prix_unitaire' => 5.00,
                 'unite_mesure' => 'rame',
                 'quantite_stock' => 100,
