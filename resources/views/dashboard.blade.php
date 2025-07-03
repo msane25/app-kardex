@@ -192,8 +192,8 @@
                                     <td class="px-4 py-2 text-sm">{{ is_string($mouvement->date_mouvement) ? $mouvement->date_mouvement : $mouvement->date_mouvement->format('d/m/Y') }}</td>
                                     <td class="px-4 py-2">{{ $mouvement->article->description ?? $mouvement->designation ?? 'N/A' }}</td>
                                     <td class="px-4 py-2">
-                                        <span class="px-2 py-1 text-xs rounded-full {{ $mouvement->typeMouvement === 'Entrée' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $mouvement->typeMouvement }}
+                                        <span class="px-2 py-1 text-xs rounded-full {{ $mouvement->typeMouvement && $mouvement->typeMouvement->mouvement === 'Entrée' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $mouvement->typeMouvement ? $mouvement->typeMouvement->mouvement : 'N/A' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-2">{{ $mouvement->quantiteServis }}</td>

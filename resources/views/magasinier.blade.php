@@ -670,6 +670,7 @@
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -756,6 +757,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Type Mouvement</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -1442,7 +1444,7 @@
                 date_mouvement: dateMouvement,
                 type_mouvement_id: parseInt(typeMouvement),
                 quantite: parseInt(quantite),
-                quantiteServis: parseInt(quantite), // ajouté pour correspondre à la base
+                quantiteServis: parseInt(quantite),
                 code_article: articleId,
                 operation_id: parseInt(operationId),
                 destination: destination || demandeur || null,
@@ -1450,8 +1452,8 @@
                 document_number: numCommande || `MVT-${Date.now()}`,
                 designation: designation || null,
                 receptionnaire: receptionnaire || null,
-                demandeur: demandeur || null,
-                matricule: matricule || null // ajouté
+                demandeur: demandeur || null
+                // matricule supprimé
             })
         })
         .then(async response => {
@@ -1794,7 +1796,7 @@
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.prix_unitaire}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.seuil_alerte}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.organisation}</td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(article.date_creation)}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(article.created_at)}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                     <button onclick="editArticleFromTable(${article.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
                         Modifier
@@ -2009,7 +2011,7 @@
             tbody.innerHTML += `
                 <tr>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(mvt.date_mouvement)}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.codeArticle || mvt.code_article || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.code_article || mvt.codeArticle || (mvt.article && mvt.article.code_article) || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.designation || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.quantite || mvt.quantiteServis || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.type_mouvement_id || '-'}</td>
@@ -2128,7 +2130,7 @@
             })
             .catch(error => {
                 const tbody = document.getElementById('typeMouvementsTableBody');
-                tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-red-500">Erreur lors du chargement des types de mouvement : ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">Erreur lors du chargement des types de mouvement : ${error.message}</td></tr>`;
             });
     }
 
@@ -2141,7 +2143,7 @@
         if (pageTypeMouvements.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                         Aucun type de mouvement trouvé
                     </td>
                 </tr>
@@ -2153,6 +2155,7 @@
                 <tr>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${type.id_type_mouvement || type.id || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${type.mouvement || type.libelle || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(type.created_at)}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                         <button onclick="editTypeMouvementFromTable(${type.id_type_mouvement || type.id}, '${(type.mouvement || type.libelle || '').replace(/'/g, '\'')}' )" class="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</button>
                         <button onclick="deleteTypeMouvementFromTable(${type.id_type_mouvement || type.id})" class="text-red-600 hover:text-red-900">Supprimer</button>
@@ -2307,7 +2310,7 @@
         if (pageOperations.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
                         Aucune opération trouvée
                     </td>
                 </tr>
@@ -2320,6 +2323,7 @@
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${op.id_operation || op.id || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${op.libelle || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${op.id_type_mouvement || op.type_mouvement_id || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(op.created_at)}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                         <button onclick="editOperationFromTable(${op.id_operation || op.id}, '${(op.libelle || '').replace(/'/g, '\'')}', '${op.id_type_mouvement || op.type_mouvement_id || ''}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</button>
                         <button onclick="deleteOperationFromTable(${op.id_operation || op.id})" class="text-red-600 hover:text-red-900">Supprimer</button>

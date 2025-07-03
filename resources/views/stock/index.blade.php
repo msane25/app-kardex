@@ -70,10 +70,10 @@
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="px-4 py-2 font-medium">{{ $article->code_article }}</td>
                                 <td class="px-4 py-2">{{ $article->description }}</td>
-                                <td class="px-4 py-2">{{ $article->quantiteInitiale }}</td>
-                                <td class="px-4 py-2">{{ $article->quantiteStock }}</td>
-                                <td class="px-4 py-2">{{ $article->uniteDeMesure }}</td>
-                                <td class="px-4 py-2">{{ $article->seuilAlerte }}</td>
+                                <td class="px-4 py-2">{{ $article->quantite_stock }}</td>
+                                <td class="px-4 py-2">{{ $article->quantite_stock }}</td>
+                                <td class="px-4 py-2">{{ $article->unite_mesure }}</td>
+                                <td class="px-4 py-2">{{ $article->seuil_critique }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-600">{{ $article->created_at->format('d/m/Y H:i') }}</td>
                             </tr>
                         @empty
@@ -111,20 +111,18 @@
                         @forelse($mouvements as $mouvement)
                             <tr>
                                 <td>{{ $mouvement->date_mouvement }}</td>
-                                <td>{{ $mouvement->typeMouvement->libelle ?? '' }}</td>
+                                <td>{{ $mouvement->typeMouvement ? $mouvement->typeMouvement->mouvement : '' }}</td>
                                 <td>{{ $mouvement->operation->libelle ?? '' }}</td>
-                                <td>{{ $mouvement->codeArticle }}</td>
-                                <td>{{ $mouvement->article->designation ?? '' }}</td>
+                                <td>{{ $mouvement->article ? $mouvement->article->code_article : '' }}</td>
+                                <td>{{ $mouvement->designation ?? '' }}</td>
                                 <td>{{ $mouvement->demandeur }} / {{ $mouvement->direction }}</td>
                                 <td>{{ $mouvement->fournisseur }}</td>
-                                <td>{{ $mouvement->numeroCommande }}</td>
+                                <td>{{ $mouvement->document_number ?? '' }}</td>
                                 <td>{{ $mouvement->document_number }}</td>
                                 <td>{{ $mouvement->quantiteServis }}</td>
                                 <td>{{ $mouvement->receptionnaire }}</td>
-                                <td>
-                                    <!-- Boutons d'action (ex: voir, éditer, supprimer) -->
-                                    <a href="{{ route('mouvements.show', $mouvement->idMouvement) }}">Voir</a>
-                                </td>
+                                <!-- Boutons d'action (ex: voir, éditer, supprimer) -->
+                                <!-- <a href="{{ route('mouvements.show', $mouvement->idMouvement) }}">Voir</a> -->
                             </tr>
                         @empty
                             <tr>
@@ -137,45 +135,10 @@
         </div>
 
         {{-- Tableau de récupération des Types de Mouvement --}}
-        <div class="mt-12">
-            <h2 class="text-xl font-bold mb-4 text-blue-700">Tableau de récupération des Types de Mouvement</h2>
-            <div class="overflow-x-auto rounded-lg shadow">
-                <table class="min-w-full bg-white border border-gray-300">
-                    <thead class="bg-blue-100">
-                        <tr>
-                            <th class="px-4 py-2 border-b">ID</th>
-                            <th class="px-4 py-2 border-b">Type de Mouvement</th>
-                            <th class="px-4 py-2 border-b">Date de Création</th>
-                            <th class="px-4 py-2 border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- @foreach($types as $type) ... @endforeach --}}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {{-- Fin du bloc à supprimer --}}
 
         {{-- Tableau de récupération des Opérations --}}
-        <div class="mt-12">
-            <h2 class="text-xl font-bold mb-4 text-purple-700">Tableau de récupération des Opérations</h2>
-            <div class="overflow-x-auto rounded-lg shadow">
-                <table class="min-w-full bg-white border border-gray-300">
-                    <thead class="bg-purple-100">
-                        <tr>
-                            <th class="px-4 py-2 border-b">ID</th>
-                            <th class="px-4 py-2 border-b">Libellé Opération</th>
-                            <th class="px-4 py-2 border-b">Type de Mouvement</th>
-                            <th class="px-4 py-2 border-b">Date de Création</th>
-                            <th class="px-4 py-2 border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- @foreach($operations as $operation) ... @endforeach --}}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {{-- Fin du bloc à supprimer --}}
     </div>
 </body>
 </html>

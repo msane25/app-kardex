@@ -32,7 +32,6 @@ class MouvementController extends Controller
             'designation' => 'nullable|string',
             'receptionnaire' => 'nullable|string',
             'demandeur' => 'nullable|string',
-            'matricule' => 'nullable|string',
         ]);
 
         // Mapping automatique si 'quantite' est présent
