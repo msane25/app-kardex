@@ -294,8 +294,8 @@
                     </div>
 
                     <div>
-                        <label for="modal_doc_associe" class="block text-sm font-medium text-gray-700">Doc Associé</label>
-                        <input type="text" id="modal_doc_associe" name="modal_doc_associe" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Ex: Facture, Bon de livraison...">
+                        <label for="modal_doc_associe" class="block text-sm font-medium text-gray-700">Doc Associé (PDF uniquement)</label>
+                        <input type="file" id="modal_doc_associe" name="modal_doc_associe" accept="application/pdf" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
                     </div>
 
                     <div>
