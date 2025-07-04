@@ -851,6 +851,12 @@
                     <button onclick="refreshMouvementTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                         Actualiser
                     </button>
+                    <button onclick="printMouvementsTable()" class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
+                        Imprimer
+                    </button>
+                    <button onclick="exportMouvementsToExcel()" class="px-6 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 transition-colors">
+                        Exporter Excel
+                    </button>
                 </div>
             </div>
             <div class="overflow-x-auto">

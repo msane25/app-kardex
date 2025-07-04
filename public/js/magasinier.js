@@ -238,4 +238,110 @@ function loadMouvementsTable() {
                 });
             }
         });
+}
+
+function printMouvementsTable() {
+    fetch(getApiUrl('/api/mouvements'))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                // Générer le tableau HTML avec toutes les données
+                let tableHtml = `<table style='width:100%; border-collapse: collapse; margin-bottom: 20px;'>`;
+                tableHtml += `<thead><tr>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Date Mouvement</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Type Mouvement</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Opération</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Code Article</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Désignation</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Demandeur</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Fournisseur</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Numéro Commande</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Document</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Quantité Servie</th>`;
+                tableHtml += `<th style='border:1px solid #ccc; padding:8px;'>Réceptionnaire</th>`;
+                tableHtml += `</tr></thead><tbody>`;
+                data.data.forEach(mouvement => {
+                    tableHtml += `<tr>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.date_mouvement || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.typeMouvement ? mouvement.typeMouvement.libelle : ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.operation ? mouvement.operation.libelle : ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.codeArticle || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.designation || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.demandeur || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.fournisseur || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.numeroCommande || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.document_number || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.quantiteServis || ''}</td>`;
+                    tableHtml += `<td style='border:1px solid #ccc; padding:8px;'>${mouvement.receptionnaire || ''}</td>`;
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += `</tbody></table>`;
+
+                const printWindow = window.open('', '', 'width=1000,height=700');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Impression de tous les mouvements</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                            th { background: #16a34a; color: #fff; }
+                            h2 { text-align: center; color: #16a34a; }
+                            @media print { .no-print { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Tableau de récupération de tous les mouvements</h2>
+                        ${tableHtml}
+                        <div class="no-print" style="text-align:center; margin-top:30px;">
+                            <button onclick="window.print()" style="padding:10px 20px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;">Imprimer</button>
+                            <button onclick="window.close()" style="padding:10px 20px; background:#6b7280; color:white; border:none; border-radius:5px; cursor:pointer; margin-left:10px;">Fermer</button>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+            } else {
+                alert('Impossible de récupérer les mouvements pour impression.');
+            }
+        })
+        .catch(() => alert('Erreur lors de la récupération des mouvements pour impression.'));
+}
+
+function exportMouvementsToExcel() {
+    fetch(getApiUrl('/api/mouvements'))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                // Générer le contenu CSV
+                let csv = 'Date Mouvement,Type Mouvement,Opération,Code Article,Désignation,Demandeur,Fournisseur,Numéro Commande,Document,Quantité Servie,Réceptionnaire\n';
+                data.data.forEach(mouvement => {
+                    csv += `"${mouvement.date_mouvement || ''}",`;
+                    csv += `"${mouvement.typeMouvement ? mouvement.typeMouvement.libelle : ''}",`;
+                    csv += `"${mouvement.operation ? mouvement.operation.libelle : ''}",`;
+                    csv += `"${mouvement.codeArticle || ''}",`;
+                    csv += `"${mouvement.designation || ''}",`;
+                    csv += `"${mouvement.demandeur || ''}",`;
+                    csv += `"${mouvement.fournisseur || ''}",`;
+                    csv += `"${mouvement.numeroCommande || ''}",`;
+                    csv += `"${mouvement.document_number || ''}",`;
+                    csv += `"${mouvement.quantiteServis || ''}",`;
+                    csv += `"${mouvement.receptionnaire || ''}"\n`;
+                });
+                // Créer un blob et déclencher le téléchargement
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'mouvements.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('Impossible de récupérer les mouvements pour export.');
+            }
+        })
+        .catch(() => alert('Erreur lors de la récupération des mouvements pour export.'));
 } 
