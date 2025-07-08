@@ -480,7 +480,7 @@
 
     <div class="min-h-screen flex items-center justify-center p-6">
         <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-5xl border border-blue-200">
-            <h2 class="text-4xl font-extrabold mb-10 text-left text-blue-700 uppercase tracking-widest drop-shadow">APP STOCK</h2>
+            <h2 class="text-6xl font-extrabold mb-10 text-center text-blue-700 uppercase tracking-widest drop-shadow">APP STOCK</h2>
 
             <!-- Date & Document en haut -->
             <div class="w-full flex justify-center mb-6">
