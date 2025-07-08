@@ -301,9 +301,6 @@
                     <button type="button" onclick="saveArticle()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Enregistrer
                     </button>
-                    <button type="button" onclick="editArticle()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                        Modifier
-                    </button>
                 </div>
             </div>
         </div>
@@ -398,9 +395,6 @@
                     <button type="button" onclick="saveMouvement()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Enregistrer
                     </button>
-                    <button type="button" onclick="editMouvement()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                        Modifier
-                    </button>
                 </div>
             </div>
         </div>
@@ -439,9 +433,6 @@
                     </button>
                     <button type="button" onclick="saveOperation()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
                         Enregistrer
-                    </button>
-                    <button type="button" onclick="editOperation()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                        Modifier
                     </button>
                 </div>
             </div>
