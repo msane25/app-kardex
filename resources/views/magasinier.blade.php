@@ -127,7 +127,26 @@
         text-decoration: none;
         cursor: pointer;
     }
-</style>
+
+    .tab-btn {
+      background: transparent;
+      color: #2563eb;
+      border: none;
+      border-right: 1px solid #e0e7ef;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn:hover, .tab-btn:focus {
+      background: #e0f2fe;
+      color: #1d4ed8;
+    }
+    .tab-btn.active {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.15);
+      z-index: 1;
+    }
+    </style>
 
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
@@ -154,6 +173,67 @@
             Voir les données enregistrées
         </a>
     </div>
+    <!-- Onglets pour les tableaux de récupération -->
+    <div class="flex justify-center mb-8">
+      <div class="flex bg-white rounded-full shadow-lg overflow-hidden border border-blue-200">
+        <button type="button" id="tab-articles"
+          onclick="showTab('articles')"
+          class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none"
+        >
+          📦 Articles
+        </button>
+        <button type="button" id="tab-type-mouvements"
+          onclick="showTab('type-mouvements')"
+          class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none"
+        >
+          🔄 Types de Mouvement
+        </button>
+        <button type="button" id="tab-operations"
+          onclick="showTab('operations')"
+          class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none"
+        >
+          �� Opérations
+        </button>
+        <button type="button" id="tab-mouvements"
+          onclick="showTab('mouvements')"
+          class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none"
+        >
+          🚚 Mouvements
+        </button>
+      </div>
+    </div>
+    <script>
+    function showTab(tab) {
+      // Masquer tous les tableaux
+      document.getElementById('table-articles').style.display = 'none';
+      document.getElementById('table-type-mouvements').style.display = 'none';
+      document.getElementById('table-operations').style.display = 'none';
+      document.getElementById('table-mouvements').style.display = 'none';
+      // Désactiver tous les onglets
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      // Afficher le tableau sélectionné et activer l'onglet
+      switch(tab) {
+        case 'articles':
+          document.getElementById('table-articles').style.display = '';
+          document.getElementById('tab-articles').classList.add('active');
+          break;
+        case 'type-mouvements':
+          document.getElementById('table-type-mouvements').style.display = '';
+          document.getElementById('tab-type-mouvements').classList.add('active');
+          break;
+        case 'operations':
+          document.getElementById('table-operations').style.display = '';
+          document.getElementById('tab-operations').classList.add('active');
+          break;
+        case 'mouvements':
+          document.getElementById('table-mouvements').style.display = '';
+          document.getElementById('tab-mouvements').classList.add('active');
+          break;
+      }
+    }
+    // Afficher l'onglet Articles par défaut au chargement
+    window.onload = function() { showTab('articles'); };
+    </script>
     <!-- Modal pour créer un article -->
     <div id="articleModal" class="modal">
         <div class="modal-content">
@@ -400,7 +480,7 @@
 
     <div class="min-h-screen flex items-center justify-center p-6">
         <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-5xl border border-blue-200">
-            <h2 class="text-4xl font-extrabold mb-10 text-center text-blue-700 uppercase tracking-widest drop-shadow">APP STOCK</h2>
+            <h2 class="text-4xl font-extrabold mb-10 text-left text-blue-700 uppercase tracking-widest drop-shadow">APP STOCK</h2>
 
             <!-- Date & Document en haut -->
             <div class="w-full flex justify-center mb-6">
@@ -540,154 +620,106 @@
 
                 <!-- Boutons -->
                 <div class="text-center pt-8 space-x-4">
-                    <button type="button" onclick="printPreview()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition text-lg font-semibold">
-                        Imprimer
-                    </button>
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition text-lg font-semibold">
-                        Enregistrer
-                    </button>
+                    <!-- Bouton Imprimer supprimé ici -->
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Tableau de récupération des articles -->
-    <div class="min-h-screen flex items-center justify-center p-6 mt-8">
-        <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-blue-200">
-            <h2 class="text-4xl font-extrabold mb-10 text-center text-blue-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES ARTICLES</h2>
-
-            <!-- Filtres pour articles -->
-            <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Articles</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div>
-                        <label for="filter_article_code" class="block text-sm font-medium text-gray-700 mb-2">Code Article</label>
-                        <input type="text" id="filter_article_code" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="Rechercher par code...">
-                    </div>
-                    <div>
-                        <label for="filter_article_description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <input type="text" id="filter_article_description" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="Rechercher par description...">
-                    </div>
-                    <div>
-                        <label for="filter_article_organisation" class="block text-sm font-medium text-gray-700 mb-2">Organisation</label>
-                        <select id="filter_article_organisation" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-300">
-                            <option value="">Toutes les organisations</option>
-                            <option value="1">Direction Générale</option>
-                            <option value="2">Service Informatique</option>
-                            <option value="3">Service Financier</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="filter_article_stock" class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                        <select id="filter_article_stock" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-300">
-                            <option value="">Tous</option>
-                            <option value="en_stock">En stock</option>
-                            <option value="stock_faible">Stock faible</option>
-                            <option value="rupture">Rupture</option>
-                        </select>
-                    </div>
+    <div id="table-articles">
+        <div class="min-h-screen flex justify-center p-6 mt-8">
+            <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-blue-200">
+                <h2 class="text-3xl font-extrabold mb-8 text-center text-blue-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES ARTICLES</h2>
+                <div class="overflow-x-auto">
+                    <table id="articlesTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-blue-600 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Code Article</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Unité de Mesure</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Quantité Stock</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Prix Unitaire</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Seuil Alerte</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Organisation</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date Création</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articlesTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront chargées dynamiquement -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="mt-4 flex gap-4">
-                    <button onclick="applyArticleFilters()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Appliquer les filtres
+                <!-- Pagination pour articles -->
+                <div class="mt-8 flex items-center justify-center gap-2">
+                    <button onclick="previousArticlePage()" id="prevArticleBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-blue-100 disabled:opacity-50 transition" disabled>
+                        Précédent
                     </button>
-                    <button onclick="clearArticleFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                        Effacer les filtres
-                    </button>
-                    <button onclick="refreshArticleTable()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-                        Actualiser
+                    <span id="currentArticlePage" class="px-4 py-2 bg-blue-600 text-white rounded-full shadow">1</span>
+                    <button onclick="nextArticlePage()" id="nextArticleBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-blue-100 disabled:opacity-50 transition" disabled>
+                        Suivant
                     </button>
                 </div>
-            </div>
-
-            <!-- Tableau des articles -->
-            <div class="overflow-x-auto">
-                <table id="articlesTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
-                    <thead class="bg-blue-600 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Code Article</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Unité de Mesure</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Quantité Stock</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Prix Unitaire</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Seuil Alerte</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Organisation</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date Création</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="articlesTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Les données seront chargées dynamiquement -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination pour articles -->
-            <div class="mt-6 flex items-center justify-center gap-2">
-                <button onclick="previousArticlePage()" id="prevArticleBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Précédent
-                </button>
-                <span id="currentArticlePage" class="px-3 py-1 bg-blue-600 text-white rounded">1</span>
-                <button onclick="nextArticlePage()" id="nextArticleBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Suivant
-                </button>
             </div>
         </div>
     </div>
 
     <!-- Tableau de récupération des types de mouvement -->
-    <div class="min-h-screen flex justify-center p-6 mt-8">
-        <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-green-200">
-            <h2 class="text-3xl font-extrabold mb-8 text-center text-green-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES TYPES DE MOUVEMENT</h2>
-            <!-- Filtres pour types de mouvement -->
-            <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Types de Mouvement</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                        <label for="filter_type_mvt_id" class="block text-sm font-medium text-gray-700 mb-2">ID</label>
-                        <input type="text" id="filter_type_mvt_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par ID...">
+    <div id="table-type-mouvements" style="display:none">
+        <div class="min-h-screen flex justify-center p-6 mt-8">
+            <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-green-200">
+                <h2 class="text-3xl font-extrabold mb-8 text-center text-green-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES TYPES DE MOUVEMENT</h2>
+                <!-- Filtres pour types de mouvement -->
+                <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Types de Mouvement</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="filter_type_mvt_id" class="block text-sm font-medium text-gray-700 mb-2">ID</label>
+                            <input type="text" id="filter_type_mvt_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par ID...">
+                        </div>
+                        <div>
+                            <label for="filter_type_mvt_libelle" class="block text-sm font-medium text-gray-700 mb-2">Libellé</label>
+                            <input type="text" id="filter_type_mvt_libelle" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par libellé...">
+                        </div>
                     </div>
-                    <div>
-                        <label for="filter_type_mvt_libelle" class="block text-sm font-medium text-gray-700 mb-2">Libellé</label>
-                        <input type="text" id="filter_type_mvt_libelle" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par libellé...">
+                    <div class="mt-4 flex gap-4">
+                        <button onclick="applyTypeMouvementFilters()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                            Appliquer les filtres
+                        </button>
+                        <button onclick="clearTypeMouvementFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                            Effacer les filtres
+                        </button>
+                        <button onclick="refreshTypeMouvementTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Actualiser
+                        </button>
                     </div>
                 </div>
-                <div class="mt-4 flex gap-4">
-                    <button onclick="applyTypeMouvementFilters()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-                        Appliquer les filtres
+                <div class="overflow-x-auto">
+                    <table id="typeMouvementsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-green-600 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="typeMouvementsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination pour types de mouvement -->
+                <div class="mt-8 flex items-center justify-center gap-2">
+                    <button onclick="previousTypeMouvementPage()" id="prevTypeMouvementBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-green-100 disabled:opacity-50 transition" disabled>
+                        Précédent
                     </button>
-                    <button onclick="clearTypeMouvementFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                        Effacer les filtres
-                    </button>
-                    <button onclick="refreshTypeMouvementTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Actualiser
+                    <span id="currentTypeMouvementPage" class="px-4 py-2 bg-green-600 text-white rounded-full shadow">1</span>
+                    <button onclick="nextTypeMouvementPage()" id="nextTypeMouvementBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-green-100 disabled:opacity-50 transition" disabled>
+                        Suivant
                     </button>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table id="typeMouvementsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
-                    <thead class="bg-green-600 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="typeMouvementsTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Les données seront chargées dynamiquement -->
-                    </tbody>
-                </table>
-            </div>
-            <!-- Pagination pour types de mouvement -->
-            <div class="mt-6 flex items-center justify-center gap-2">
-                <button onclick="previousTypeMouvementPage()" id="prevTypeMouvementBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Précédent
-                </button>
-                <span id="currentTypeMouvementPage" class="px-3 py-1 bg-green-600 text-white rounded">1</span>
-                <button onclick="nextTypeMouvementPage()" id="nextTypeMouvementBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Suivant
-                </button>
             </div>
         </div>
     </div>
@@ -718,63 +750,65 @@
     </div>
 
     <!-- Tableau de récupération des opérations -->
-    <div class="min-h-screen flex justify-center p-6 mt-8">
-        <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-red-200">
-            <h2 class="text-3xl font-extrabold mb-8 text-center text-red-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES OPÉRATIONS</h2>
-            <!-- Filtres pour opérations -->
-            <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Opérations</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                        <label for="filter_operation_id" class="block text-sm font-medium text-gray-700 mb-2">ID</label>
-                        <input type="text" id="filter_operation_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par ID...">
+    <div id="table-operations" style="display:none">
+        <div class="min-h-screen flex justify-center p-6 mt-8">
+            <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-red-200">
+                <h2 class="text-3xl font-extrabold mb-8 text-center text-red-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES OPÉRATIONS</h2>
+                <!-- Filtres pour opérations -->
+                <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Opérations</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label for="filter_operation_id" class="block text-sm font-medium text-gray-700 mb-2">ID</label>
+                            <input type="text" id="filter_operation_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par ID...">
+                        </div>
+                        <div>
+                            <label for="filter_operation_libelle" class="block text-sm font-medium text-gray-700 mb-2">Libellé</label>
+                            <input type="text" id="filter_operation_libelle" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par libellé...">
+                        </div>
+                        <div>
+                            <label for="filter_operation_type_mvt" class="block text-sm font-medium text-gray-700 mb-2">Type Mouvement</label>
+                            <input type="text" id="filter_operation_type_mvt" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par type...">
+                        </div>
                     </div>
-                    <div>
-                        <label for="filter_operation_libelle" class="block text-sm font-medium text-gray-700 mb-2">Libellé</label>
-                        <input type="text" id="filter_operation_libelle" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par libellé...">
-                    </div>
-                    <div>
-                        <label for="filter_operation_type_mvt" class="block text-sm font-medium text-gray-700 mb-2">Type Mouvement</label>
-                        <input type="text" id="filter_operation_type_mvt" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-red-300" placeholder="Rechercher par type...">
+                    <div class="mt-4 flex gap-4">
+                        <button onclick="applyOperationFilters()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                            Appliquer les filtres
+                        </button>
+                        <button onclick="clearOperationFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                            Effacer les filtres
+                        </button>
+                        <button onclick="refreshOperationTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Actualiser
+                        </button>
                     </div>
                 </div>
-                <div class="mt-4 flex gap-4">
-                    <button onclick="applyOperationFilters()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-                        Appliquer les filtres
+                <div class="overflow-x-auto">
+                    <table id="operationsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-red-600 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Type Mouvement</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operationsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination pour opérations -->
+                <div class="mt-8 flex items-center justify-center gap-2">
+                    <button onclick="previousOperationPage()" id="prevOperationBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-red-100 disabled:opacity-50 transition" disabled>
+                        Précédent
                     </button>
-                    <button onclick="clearOperationFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                        Effacer les filtres
-                    </button>
-                    <button onclick="refreshOperationTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Actualiser
+                    <span id="currentOperationPage" class="px-4 py-2 bg-red-600 text-white rounded-full shadow">1</span>
+                    <button onclick="nextOperationPage()" id="nextOperationBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-red-100 disabled:opacity-50 transition" disabled>
+                        Suivant
                     </button>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table id="operationsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
-                    <thead class="bg-red-600 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Libellé</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Type Mouvement</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date de création</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="operationsTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Les données seront chargées dynamiquement -->
-                    </tbody>
-                </table>
-            </div>
-            <!-- Pagination pour opérations -->
-            <div class="mt-6 flex items-center justify-center gap-2">
-                <button onclick="previousOperationPage()" id="prevOperationBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Précédent
-                </button>
-                <span id="currentOperationPage" class="px-3 py-1 bg-red-600 text-white rounded">1</span>
-                <button onclick="nextOperationPage()" id="nextOperationBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Suivant
-                </button>
             </div>
         </div>
     </div>
@@ -809,86 +843,87 @@
     </div>
 
     <!-- Tableau de récupération des mouvements -->
-    <div class="min-h-screen flex justify-center p-6 mt-8">
-        <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-blue-200">
-            <h2 class="text-3xl font-extrabold mb-8 text-center text-green-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES MOUVEMENTS</h2>
-            <!-- Filtres pour mouvements -->
-            <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Mouvements</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                    <div>
-                        <label for="filter_mvt_date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                        <input type="date" id="filter_mvt_date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300">
+    <div id="table-mouvements" style="display:none">
+        <div class="min-h-screen flex justify-center p-6 mt-8">
+            <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-7xl border border-blue-200">
+                <h2 class="text-3xl font-extrabold mb-8 text-center text-green-700 uppercase tracking-widest drop-shadow">TABLEAU DE RÉCUPÉRATION DES MOUVEMENTS</h2>
+                <!-- Filtres pour mouvements -->
+                <div class="mb-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Filtres Mouvements</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                        <div>
+                            <label for="filter_mvt_date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <input type="date" id="filter_mvt_date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300">
+                        </div>
+                        <div>
+                            <label for="filter_mvt_code_article" class="block text-sm font-medium text-gray-700 mb-2">Code Article</label>
+                            <input type="text" id="filter_mvt_code_article" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par code...">
+                        </div>
+                        <div>
+                            <label for="filter_mvt_type_mouvement" class="block text-sm font-medium text-gray-700 mb-2">Type Mouvement</label>
+                            <input type="text" id="filter_mvt_type_mouvement" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Type...">
+                        </div>
+                        <div>
+                            <label for="filter_mvt_operation" class="block text-sm font-medium text-gray-700 mb-2">Opération</label>
+                            <input type="text" id="filter_mvt_operation" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Opération...">
+                        </div>
+                        <div>
+                            <label for="filter_mvt_demandeur" class="block text-sm font-medium text-gray-700 mb-2">Demandeur</label>
+                            <input type="text" id="filter_mvt_demandeur" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Demandeur...">
+                        </div>
+                        <div>
+                            <label for="filter_mvt_fournisseur" class="block text-sm font-medium text-gray-700 mb-2">Fournisseur</label>
+                            <input type="text" id="filter_mvt_fournisseur" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Fournisseur...">
+                        </div>
                     </div>
-                    <div>
-                        <label for="filter_mvt_code_article" class="block text-sm font-medium text-gray-700 mb-2">Code Article</label>
-                        <input type="text" id="filter_mvt_code_article" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Rechercher par code...">
-                    </div>
-                    <div>
-                        <label for="filter_mvt_type_mouvement" class="block text-sm font-medium text-gray-700 mb-2">Type Mouvement</label>
-                        <input type="text" id="filter_mvt_type_mouvement" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Type...">
-                    </div>
-                    <div>
-                        <label for="filter_mvt_operation" class="block text-sm font-medium text-gray-700 mb-2">Opération</label>
-                        <input type="text" id="filter_mvt_operation" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Opération...">
-                    </div>
-                    <div>
-                        <label for="filter_mvt_demandeur" class="block text-sm font-medium text-gray-700 mb-2">Demandeur</label>
-                        <input type="text" id="filter_mvt_demandeur" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Demandeur...">
-                    </div>
-                    <div>
-                        <label for="filter_mvt_fournisseur" class="block text-sm font-medium text-gray-700 mb-2">Fournisseur</label>
-                        <input type="text" id="filter_mvt_fournisseur" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-green-300" placeholder="Fournisseur...">
+                    <div class="mt-4 flex gap-4">
+                        <button onclick="applyMouvementFilters()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                            Appliquer les filtres
+                        </button>
+                        <button onclick="clearMouvementFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                            Effacer les filtres
+                        </button>
+                        <button onclick="refreshMouvementTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Actualiser
+                        </button>
+                        <button onclick="printMouvementsTable()" class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
+                            Imprimer
+                        </button>
+                        <button onclick="exportMouvementsToExcel()" class="px-6 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 transition-colors">
+                            Exporter Excel
+                        </button>
                     </div>
                 </div>
-                <div class="mt-4 flex gap-4">
-                    <button onclick="applyMouvementFilters()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-                        Appliquer les filtres
+                <div class="overflow-x-auto">
+                    <table id="mouvementsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-green-600 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date Mouvement</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Code Article</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Désignation</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Quantité</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Type Mouvement</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Opération</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Demandeur</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Fournisseur</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mouvementsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination pour mouvements -->
+                <div class="mt-8 flex items-center justify-center gap-2">
+                    <button onclick="previousMouvementPage()" id="prevMouvementBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-blue-100 disabled:opacity-50 transition" disabled>
+                        Précédent
                     </button>
-                    <button onclick="clearMouvementFilters()" class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                        Effacer les filtres
-                    </button>
-                    <button onclick="refreshMouvementTable()" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Actualiser
-                    </button>
-                    <button onclick="printMouvementsTable()" class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
-                        Imprimer
-                    </button>
-                    <button onclick="exportMouvementsToExcel()" class="px-6 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 transition-colors">
-                        Exporter Excel
+                    <span id="currentMouvementPage" class="px-4 py-2 bg-blue-600 text-white rounded-full shadow">1</span>
+                    <button onclick="nextMouvementPage()" id="nextMouvementBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full shadow hover:bg-blue-100 disabled:opacity-50 transition" disabled>
+                        Suivant
                     </button>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table id="mouvementsTable" class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg">
-                    <thead class="bg-green-600 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Date Mouvement</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Code Article</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Désignation</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Quantité</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Type Mouvement</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Opération</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Demandeur</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Fournisseur</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Matricule</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mouvementsTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Les données seront chargées dynamiquement -->
-                    </tbody>
-                </table>
-            </div>
-            <!-- Pagination pour mouvements -->
-            <div class="mt-6 flex items-center justify-center gap-2">
-                <button onclick="previousMouvementPage()" id="prevMouvementBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Précédent
-                </button>
-                <span id="currentMouvementPage" class="px-3 py-1 bg-green-600 text-white rounded">1</span>
-                <button onclick="nextMouvementPage()" id="nextMouvementBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50" disabled>
-                    Suivant
-                </button>
             </div>
         </div>
     </div>
@@ -1281,11 +1316,21 @@
     }
 
     function loadArticles() {
-        fetch(getApiUrl('/api/articles'))
-            .then(response => response.json())
+        console.log('Chargement des articles...');
+        const apiUrl = getApiUrl('/api/articles');
+        console.log('URL API articles:', apiUrl);
+        
+        fetch(apiUrl)
+            .then(response => {
+                console.log('Réponse API articles:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(result => {
                 console.log('Données articles reçues:', result);
-                const articles = result.data || result;
+                const articles = result.data || [];
                 const select = document.getElementById('modal_code_article_mvt');
                 if (select) {
                     select.innerHTML = '<option value="">-- Sélectionner --</option>';
@@ -1324,7 +1369,7 @@
             })
             .then(result => {
                 console.log('Données types de mouvement reçues:', result);
-                const types = result.data || result;
+                const types = result.data || [];
                 const select = document.getElementById('modal_type_mouvement');
                 if (select) {
                     select.innerHTML = '<option value="">-- Sélectionner --</option>';
@@ -1361,7 +1406,7 @@
             })
             .then(result => {
                 console.log('Données opérations reçues:', result);
-                const operations = result.data || result;
+                const operations = result.data || [];
                 const select = document.getElementById('modal_operation');
                 if (select) {
                     select.innerHTML = '<option value="">-- Sélectionner --</option>';
@@ -1519,15 +1564,36 @@
     }
 
     function loadTypeMouvementsForOperation(selectedId = null) {
+        console.log('Chargement des types de mouvement pour opération...');
         fetch(getApiUrl('/api/type-mouvements'))
-            .then(response => response.json())
+            .then(response => {
+                console.log('Réponse API types de mouvement pour opération:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(result => {
-                const types = result.data || result;
+                console.log('Données types de mouvement pour opération reçues:', result);
+                const types = result.data || [];
                 const select = document.getElementById('modal_type_mouvement_operation');
-                select.innerHTML = '<option value="">-- Sélectionner --</option>';
-                types.forEach(type => {
-                    select.innerHTML += `<option value="${type.id_type_mouvement}" ${selectedId == type.id_type_mouvement ? 'selected' : ''}>${type.mouvement}</option>`;
-                });
+                if (select) {
+                    select.innerHTML = '<option value="">-- Sélectionner --</option>';
+                    if (Array.isArray(types)) {
+                        types.forEach(type => {
+                            select.innerHTML += `<option value="${type.id_type_mouvement}" ${selectedId == type.id_type_mouvement ? 'selected' : ''}>${type.mouvement}</option>`;
+                        });
+                        console.log(`${types.length} types de mouvement chargés pour opération`);
+                    } else {
+                        console.error('Les types de mouvement ne sont pas un tableau:', types);
+                    }
+                } else {
+                    console.error('Select modal_type_mouvement_operation non trouvé');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des types de mouvement pour opération:', error);
+                alert('Erreur lors du chargement des types de mouvement: ' + error.message);
             });
     }
 
@@ -1715,7 +1781,6 @@
     // Variables globales pour le tableau
     let currentPage = 1;
     let itemsPerPage = 10;
-    let totalMouvements = 0;
     let allMouvements = [];
     let filteredMouvements = [];
 
@@ -1727,8 +1792,6 @@
     // Variables globales pour le tableau des types de mouvement
     let allTypeMouvements = [];
     let filteredTypeMouvements = [];
-
-    // Variables globales pour la pagination des types de mouvement
     let currentTypeMouvementPage = 1;
     let typeMouvementsPerPage = 10;
 
@@ -1778,6 +1841,8 @@
     }
 
     function displayArticles() {
+        // Trier les articles du plus récent au plus ancien (par date de création)
+        filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const tbody = document.getElementById('articlesTableBody');
         tbody.innerHTML = '';
 
@@ -1801,7 +1866,7 @@
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.quantite_stock}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.prix_unitaire}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.seuil_alerte}</td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.organisation}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${article.organisation && article.organisation.nom ? article.organisation.nom : '-'}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${formatDate(article.created_at)}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                     <button onclick="editArticleFromTable(${article.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -1828,25 +1893,42 @@
         const organisationFilter = document.getElementById('filter_article_organisation').value;
         const stockFilter = document.getElementById('filter_article_stock').value;
 
+        // Filtrage côté client
         filteredArticles = allArticles.filter(article => {
             let matches = true;
-
-            if (codeFilter && article.codeArticle.toLowerCase().indexOf(codeFilter.toLowerCase()) === -1) {
+            
+            if (codeFilter && !article.codeArticle?.toLowerCase().includes(codeFilter.toLowerCase())) {
                 matches = false;
             }
-            if (descriptionFilter && article.description.toLowerCase().indexOf(descriptionFilter.toLowerCase()) === -1) {
+            
+            if (descriptionFilter && !article.description?.toLowerCase().includes(descriptionFilter.toLowerCase())) {
                 matches = false;
             }
-            if (organisationFilter && article.organisation !== organisationFilter) {
+            
+            if (organisationFilter && article.organisation != organisationFilter) {
                 matches = false;
             }
-            if (stockFilter && article.stock_status !== stockFilter) {
-                matches = false;
+            
+            if (stockFilter) {
+                const stock = parseInt(article.quantite_stock) || 0;
+                const seuil = parseInt(article.seuil_alerte) || 0;
+                
+                switch (stockFilter) {
+                    case 'en_stock':
+                        if (stock <= 0) matches = false;
+                        break;
+                    case 'stock_faible':
+                        if (stock > seuil || stock <= 0) matches = false;
+                        break;
+                    case 'rupture':
+                        if (stock > 0) matches = false;
+                        break;
+                }
             }
-
+            
             return matches;
         });
-
+        
         currentArticlePage = 1;
         displayArticles();
         updateArticlePagination();
@@ -1858,14 +1940,20 @@
         document.getElementById('filter_article_organisation').value = '';
         document.getElementById('filter_article_stock').value = '';
         
-        filteredArticles = [...allArticles];
-        currentArticlePage = 1;
-        displayArticles();
-        updateArticlePagination();
+        // Recharger les données sans filtres
+        loadArticlesTable();
     }
 
     function refreshArticleTable() {
         loadArticlesTable();
+    }
+
+    function changeArticlesPerPage() {
+        const newPerPage = parseInt(document.getElementById('articlesPerPage').value);
+        itemsPerPage = newPerPage;
+        currentArticlePage = 1;
+        displayArticles();
+        updateArticlePagination();
     }
 
     function updateArticlePagination() {
@@ -1998,6 +2086,8 @@
     }
 
     function displayMouvements() {
+        // Trier les mouvements du plus récent au plus ancien
+        filteredMouvements.sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement));
         const tbody = document.getElementById('mouvementsTableBody');
         tbody.innerHTML = '';
         const start = (currentMouvementPage - 1) * mouvementsPerPage;
@@ -2006,7 +2096,7 @@
         if (pageMouvements.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="10" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="9" class="px-6 py-4 text-center text-gray-500">
                         Aucun mouvement trouvé
                     </td>
                 </tr>
@@ -2024,7 +2114,6 @@
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.operation_id || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.demandeur || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.fournisseur || '-'}</td>
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${mvt.matricule || '-'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                         <button onclick="editMouvementFromTable(${mvt.id})" class="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</button>
                         <button onclick="deleteMouvementFromTable(${mvt.id})" class="text-red-600 hover:text-red-900">Supprimer</button>
@@ -2141,6 +2230,8 @@
     }
 
     function displayTypeMouvements() {
+        // Trier les types de mouvement du plus récent au plus ancien (par date de création)
+        filteredTypeMouvements.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const tbody = document.getElementById('typeMouvementsTableBody');
         tbody.innerHTML = '';
         const start = (currentTypeMouvementPage - 1) * typeMouvementsPerPage;
@@ -2308,6 +2399,8 @@
     }
 
     function displayOperations() {
+        // Trier les opérations du plus récent au plus ancien (par date de création)
+        filteredOperations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const tbody = document.getElementById('operationsTableBody');
         tbody.innerHTML = '';
         const start = (currentOperationPage - 1) * operationsPerPage;
