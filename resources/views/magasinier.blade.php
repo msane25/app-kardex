@@ -188,11 +188,11 @@
         >
           🔄 Types de Mouvement
         </button>
-        <button type="button" id="tab-operations"
-          onclick="showTab('operations')"
-          class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none"
-        >
-          �� Opérations
+        <button type="button" id="tab-operations" onclick="showTab('operations')" class="tab-btn px-8 py-3 text-base font-semibold transition-all duration-200 focus:outline-none active">
+          <svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5 mr-2 align-text-bottom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6M9 9h6m-7 4h8m-8 4h8M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+          </svg>
+          Opérations
         </button>
         <button type="button" id="tab-mouvements"
           onclick="showTab('mouvements')"
