@@ -90,7 +90,7 @@ class ArticleController extends Controller
     public function index()
     {
         try {
-            $articles = \App\Models\Article::all();
+            $articles = \App\Models\Article::with('organisation')->get();
             return response()->json(['success' => true, 'data' => $articles]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -165,4 +165,6 @@ class ArticleController extends Controller
             ], 500);
         }
     }
+
+
 }

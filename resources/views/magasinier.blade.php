@@ -150,6 +150,21 @@
 
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
+    <!-- Menu déroulant APP STOCK centré -->
+    <div class="flex justify-center mb-10 w-full">
+        <div class="relative inline-block text-left">
+            <!-- Dropdown menu -->
+            <div class="origin-top-left absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 hidden group-hover:block" id="dropdown-menu">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                    <a href="#" class="block px-4 py-2 text-lg text-blue-700 hover:bg-blue-100 hover:text-blue-900 font-semibold" role="menuitem">Article</a>
+                    <a href="#" class="block px-4 py-2 text-lg text-green-700 hover:bg-green-100 hover:text-green-900 font-semibold" role="menuitem">Type Mouvement</a>
+                    <a href="#" class="block px-4 py-2 text-lg text-red-700 hover:bg-red-100 hover:text-red-900 font-semibold" role="menuitem">Operation</a>
+                    <a href="#" class="block px-4 py-2 text-lg text-blue-700 hover:bg-blue-100 hover:text-blue-900 font-semibold" role="menuitem">Mouvement</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h1 class="uppercase text-center font-extrabold text-3xl mt-8 tracking-wider text-blue-800 drop-shadow-lg">Bienvenue</h1>
     <nav class="bg-blue-700 p-6 text-white shadow-xl flex items-center justify-between rounded-b-2xl mb-8">
         <div class="flex items-center space-x-4">
@@ -166,11 +181,17 @@
         </div>
     </nav>
     <div class="flex justify-center mb-8">
-        <a href="{{ route('stock.index') }}" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-xl shadow-md hover:bg-gray-700 transition-all duration-200 text-lg font-semibold">
+        <a href="http://localhost/stockDb/public/dashboard" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white rounded-xl shadow-md hover:bg-blue-800 transition-all duration-200 text-lg font-semibold mr-4">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m-6 0H7m6 0v6m0 0H7m6 0h6" />
+            </svg>
+            Dashboard
+        </a>
+        <a href="http://localhost/stockDb/public/stock" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-xl shadow-md hover:bg-gray-700 transition-all duration-200 text-lg font-semibold">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
-            Voir les données enregistrées
+            Voir le stock
         </a>
     </div>
     <!-- Onglets pour les tableaux de récupération -->

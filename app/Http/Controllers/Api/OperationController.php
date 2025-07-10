@@ -164,4 +164,24 @@ class OperationController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Récupérer toutes les opérations sans pagination (pour les modals)
+     */
+    public function all()
+    {
+        try {
+            $operations = \App\Models\Operation::with('typeMouvement')->get();
+            
+            return response()->json([
+                'success' => true, 
+                'data' => $operations
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Erreur lors de la récupération des opérations: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
