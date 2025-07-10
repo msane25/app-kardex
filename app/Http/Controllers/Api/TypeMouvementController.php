@@ -90,4 +90,6 @@ class TypeMouvementController extends Controller
             ], 500);
         }
     }
+
+
 }

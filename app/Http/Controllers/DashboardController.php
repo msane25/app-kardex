@@ -33,7 +33,7 @@ class DashboardController extends Controller
                                     ->get();
 
         // Mouvements récents
-        $mouvementsRecents = Mouvement::with('article')
+        $mouvementsRecents = Mouvement::with(['article', 'typeMouvement'])
                                     ->orderBy('date_mouvement', 'desc')
                                     ->limit(10)
                                     ->get();

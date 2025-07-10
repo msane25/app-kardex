@@ -33,14 +33,13 @@ class StockController extends Controller
         try {
             // Créer ou mettre à jour l'article
             $article = Article::updateOrCreate(
-                ['codeArticle' => $request->nomenclature],
+                ['code_article' => $request->nomenclature],
                 [
                     'description' => $request->designation,
-                    'quantiteStock' => $request->quantite_stock ?? 0,
-                    'uniteDeMesure' => $request->unite_mesure ?? 'Unité',
-                    'seuilAlerte' => $request->seuil_critique ?? 0,
-                    'quantiteInitiale' => $request->quantite_stock ?? 0,
-                    'idOrganisation' => 1, // Organisation par défaut
+                    'quantite_stock' => $request->quantite_stock ?? 0,
+                    'unite_mesure' => $request->unite_mesure ?? 'Unité',
+                    'seuil_critique' => $request->seuil_critique ?? 0,
+                    'prix_unitaire' => $request->prix_unitaire ?? 0,
                 ]
             );
 
@@ -60,13 +59,13 @@ class StockController extends Controller
                     'date_mouvement' => $request->date,
                     'document_number' => $documentNumber,
                     'quantiteServis' => $request->entrees ?? $request->sorties ?? 0,
-                    'typeMouvement' => $request->type_mouvement ?? 'Entrée',
+                    'type_mouvement_id' => 1, // Type par défaut
                     'designation' => $request->designation,
                     'demandeur' => auth()->user()->name ?? 'Admin',
                     'fournisseur' => $request->fournisseur ?? 'Non spécifié',
                     'matricule' => auth()->user()->matricule ?? 'ADMIN001',
-                    'codeArticle' => $request->nomenclature,
-                    'id_operation' => $operationId,
+                    'article_id' => $article->id,
+                    'operation_id' => $operationId,
                     'destination' => $request->destination_operation ?? 'Non spécifiée',
                 ]);
             }
@@ -138,12 +137,11 @@ class StockController extends Controller
             return $defaultOperation ? $defaultOperation->id_operation : null;
         }
         
-        $operation = Operation::where('type_operation', $typeMouvement)->first();
+        $operation = Operation::where('libelle', $typeMouvement)->first();
         
         if (!$operation) {
             // Si l'opération n'existe pas, la créer automatiquement
             $operation = Operation::create([
-                'type_operation' => $typeMouvement,
                 'libelle' => $typeMouvement
             ]);
         }
@@ -153,8 +151,8 @@ class StockController extends Controller
 
     public function index()
     {
-        $articles = Article::with('organisation')->get();
-        $mouvements = Mouvement::with(['article', 'operation'])->orderBy('date_mouvement', 'desc')->get();
+        $articles = Article::all();
+        $mouvements = Mouvement::with(['article', 'operation', 'typeMouvement'])->orderBy('date_mouvement', 'desc')->get();
         
         return view('stock.index', compact('articles', 'mouvements'));
     }

@@ -47,7 +47,7 @@ class Mouvement extends Model
 
     public function typeMouvement()
     {
-        return $this->belongsTo(\App\Models\TypeMouvement::class, 'typeMouvement', 'id_type_mouvement');
+        return $this->belongsTo(\App\Models\TypeMouvement::class, 'type_mouvement_id', 'id_type_mouvement');
     }
 }
 

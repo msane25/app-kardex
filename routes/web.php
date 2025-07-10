@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TypeMouvementController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\MouvementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/articles/import', [ArticleController::class, 'import'])->name('articles.import');
 
     // Routes pour le stock
-    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+
+// Routes pour les mouvements
+Route::get('/mouvements/{mouvement}', [MouvementController::class, 'show'])->name('mouvements.show');
 
     // Routes pour la documentation
     Route::get('/documentation/manuel-utilisateur', [DocumentationController::class, 'manuelUtilisateur'])->name('documentation.manuel');
