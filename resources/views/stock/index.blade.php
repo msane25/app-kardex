@@ -51,6 +51,9 @@
 
         <!-- Articles -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="mb-4 text-right text-blue-700 font-bold">
+                Date du jour : {{ \Carbon\Carbon::now()->format('d/m/Y') }}
+            </div>
             <h2 class="text-2xl font-semibold mb-4 text-gray-800">Articles en Stock</h2>
             <div class="overflow-x-auto scroll-container">
                 <table class="min-w-full table-auto">
@@ -66,8 +69,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($articles as $article)
-                            <tr class="border-b hover:bg-gray-50">
+                        @forelse($articles as $index => $article)
+                            <tr class="border-b hover:bg-gray-50 @if($index === 0) bg-blue-50 font-bold @endif">
                                 <td class="px-4 py-2 font-medium">{{ $article->code_article }}</td>
                                 <td class="px-4 py-2">{{ $article->description }}</td>
                                 <td class="px-4 py-2">{{ $article->quantite_stock }}</td>
