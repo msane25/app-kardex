@@ -151,7 +151,7 @@ class StockController extends Controller
 
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::orderBy('created_at', 'desc')->get();
         $mouvements = Mouvement::with(['article', 'operation', 'typeMouvement'])->orderBy('date_mouvement', 'desc')->get();
         
         return view('stock.index', compact('articles', 'mouvements'));
